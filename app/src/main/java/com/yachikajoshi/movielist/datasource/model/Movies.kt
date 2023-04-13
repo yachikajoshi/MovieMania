@@ -9,6 +9,9 @@ data class Movies(var items: MovieDetail) {
         var crew: String,
         var image: String,
         var rankUpDown: String,
-        var imDbRating: String
+        var imDbRating: String,
+        var releaseState: String,
+        var stars: String,
+        var genres: String
     )
 }
