@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/movieListFragment3">
+    <fragment
+        android:id="@+id/movieListFragment3"
+        android:name="com.yachikajoshi.movielist.presentation.movie_list.MovieListFragment"
+        android:label="MovieListFragment" >
+        <action
+            android:id="@+id/viewMovie"
+            app:destination="@id/movieDetailFragment3" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieDetailFragment3"
+        android:name="com.yachikajoshi.movielist.presentation.movie_detail.MovieDetailFragment"
+        android:label="MovieDetailFragment" />
+</navigation>
