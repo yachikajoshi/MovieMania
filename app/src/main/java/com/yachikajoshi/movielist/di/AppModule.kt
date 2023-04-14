@@ -4,10 +4,11 @@ import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.yachikajoshi.movielist.Constants
-import com.yachikajoshi.movielist.datasource.MovieAPIService
+import com.yachikajoshi.movielist.data.datasource.MovieAPIService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 
 
 @Module
-@InstallIn
+@InstallIn(SingletonComponent::class)
 class AppModule {
 
     @Provides
