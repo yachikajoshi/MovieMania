@@ -5,7 +5,6 @@ import com.yachikajoshi.movielist.data.model.Movies
 import com.yachikajoshi.movielist.domain.repo.ComingSoonRepository
 
 class GetComingSoonMoviesImpl(private val apiService: MovieAPIService) : ComingSoonRepository {
-
     override suspend fun getComingSoonMovies(): Movies =
         apiService.getComingSoonMovies()
 

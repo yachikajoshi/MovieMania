@@ -2,10 +2,9 @@ package com.yachikajoshi.movielist.domain.repo
 
 import com.yachikajoshi.movielist.data.model.Movies
 
-/*
-* We are going to use this repository in
-* `data.repo` package &
-* in this repo we are getting the data directly from the API
+/**
+* We are going to implement this repository
+ * in our data layer
 * */
 
 interface Top10MovieRepository {
