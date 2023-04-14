@@ -5,7 +5,9 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.yachikajoshi.movielist.Constants
 import com.yachikajoshi.movielist.data.datasource.MovieAPIService
+import com.yachikajoshi.movielist.data.repo.GetComingSoonMoviesImpl
 import com.yachikajoshi.movielist.data.repo.GetTop10MoviesImpl
+import com.yachikajoshi.movielist.domain.repo.ComingSoonRepository
 import com.yachikajoshi.movielist.domain.repo.Top10MovieRepository
 import dagger.Module
 import dagger.Provides
@@ -46,4 +48,8 @@ class AppModule {
     @Provides
     fun provideTop10MoviesRepository(apiService: MovieAPIService): Top10MovieRepository =
         GetTop10MoviesImpl(apiService)
+
+    @Provides
+    fun provideComingSoonMoviesRepository(apiService: MovieAPIService): ComingSoonRepository =
+        GetComingSoonMoviesImpl(apiService)
 }

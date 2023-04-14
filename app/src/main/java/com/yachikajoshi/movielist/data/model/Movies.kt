@@ -4,7 +4,7 @@ import com.yachikajoshi.movielist.domain.model.ComingSoon
 import com.yachikajoshi.movielist.domain.model.Movie
 import com.yachikajoshi.movielist.domain.model.MovieDetail
 
-data class Movies(var items: MovieDetail) {
+data class Movies(var items: List<MovieDetail>,var errorMessage:String) {
     data class MovieDetail(
         var id: String,
         var title: String,
