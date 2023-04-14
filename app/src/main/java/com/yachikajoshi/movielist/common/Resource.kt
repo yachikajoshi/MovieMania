@@ -1,4 +1,4 @@
-package com.yachikajoshi.movielist
+package com.yachikajoshi.movielist.common
 
 /**
  * With the help of this class

@@ -1,4 +1,4 @@
-package com.yachikajoshi.movielist.movies
+package com.yachikajoshi.movielist.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

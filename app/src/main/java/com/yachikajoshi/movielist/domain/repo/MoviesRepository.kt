@@ -7,7 +7,10 @@ import com.yachikajoshi.movielist.data.model.Movies
  * in our data layer
 * */
 
-interface Top10MovieRepository {
+interface MoviesRepository {
 
     suspend fun getTop10Movies(): Movies
+
+    suspend fun getComingSoonMovies(): Movies
+
 }
