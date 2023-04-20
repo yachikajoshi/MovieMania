@@ -1,9 +1,16 @@
-package com.yachikajoshi.movielist.presentation
+package com.yachikajoshi.movielist.ui.presentation
 
+import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -14,6 +21,29 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.data.model.Movies
+
+
+@Composable
+fun MovieList(
+    modelState: MovieState,
+    onMovieClicked: (index: Int) -> Unit
+) {
+    val context = LocalContext.current
+    LaunchedEffect(key1 = modelState.error, block = {
+        Toast.makeText(context, modelState.error, Toast.LENGTH_LONG).show()
+    })
+    if (modelState.isLoading) {
+        CircularProgressIndicator()
+    } else {
+        LazyRow(modifier = Modifier.fillMaxWidth()) {
+            itemsIndexed(modelState.data) { index, movie ->
+                MovieItem(
+                    movie = movie,
+                    Modifier.clickable { onMovieClicked(index) })
+            }
+        }
+    }
+}
 
 @Composable
 fun MovieItem(movie: Movies.MovieDetail, modifier: Modifier = Modifier) {
@@ -37,4 +67,3 @@ fun MovieItem(movie: Movies.MovieDetail, modifier: Modifier = Modifier) {
 fun MovieItemPreview() {
     MovieItem(movie = Movies.MovieDetail())
 }
-

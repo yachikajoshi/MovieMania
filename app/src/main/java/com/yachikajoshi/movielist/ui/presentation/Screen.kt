@@ -1,4 +1,4 @@
-package com.yachikajoshi.movielist
+package com.yachikajoshi.movielist.ui.presentation
 
 sealed class Screen(val route: String) {
     object MovieList : Screen(route = "movie_list")
