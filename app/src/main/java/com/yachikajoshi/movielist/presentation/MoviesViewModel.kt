@@ -1,4 +1,4 @@
-package com.yachikajoshi.movielist.presentation.movie_list
+package com.yachikajoshi.movielist.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,31 +12,35 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
-class MovieListViewModel @Inject constructor(private val movieListUseCase: MovieListUseCase) :
+class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieListUseCase) :
     ViewModel() {
+    init {
+        getTop10MovieList()
+    }
 
-    private val _movieList = MutableStateFlow(MovieState())
-    val top10MovieList: StateFlow<MovieState> = _movieList
+    private val _movieState = MutableStateFlow(MovieState())
+    val movieState: StateFlow<MovieState> = _movieState
+
     private val _upcomingMovieList = MutableStateFlow(MovieState())
     val upcomingMovieList: StateFlow<MovieState> = _upcomingMovieList
 
-    fun getTop10MovieList() {
+    private fun getTop10MovieList() {
         movieListUseCase.getTop10Movies().onEach {
             when (it) {
                 is Resource.Error -> {
-                    _movieList.value = MovieState(error = it.message ?: "")
+                    _movieState.value = MovieState(error = it.message ?: "")
                 }
                 is Resource.Loading -> {
-                    _movieList.value = MovieState(isLoading = true)
+                    _movieState.value = MovieState(isLoading = true)
                 }
                 is Resource.Success -> {
-                    _movieList.value = MovieState(data = it.data?.items)
+                    _movieState.value = MovieState(data = it.data.items)
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun getUpcomingMovieList() {
+    private fun getUpcomingMovieList() {
         movieListUseCase.getUpcomingMovies().onEach {
             when (it) {
                 is Resource.Error -> {
@@ -46,7 +50,7 @@ class MovieListViewModel @Inject constructor(private val movieListUseCase: Movie
                     _upcomingMovieList.value = MovieState(isLoading = true)
                 }
                 is Resource.Success -> {
-                    _upcomingMovieList.value = MovieState(data = it.data?.items)
+                    _upcomingMovieList.value = MovieState(data = it.data.items)
                 }
             }
         }.launchIn(viewModelScope)

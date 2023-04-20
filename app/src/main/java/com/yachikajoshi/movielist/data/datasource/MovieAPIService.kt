@@ -6,10 +6,9 @@ import retrofit2.http.GET
 
 interface MovieAPIService {
 
-    @GET("MostPopularMovies/k_r87ghktr")
+    @GET("MostPopularMovies/k_20dozih9")
     suspend fun getTop10Movies(): Movies
 
-    @GET("ComingSoon/k_r87ghktr")
+    @GET("ComingSoon/k_20dozih9")
     suspend fun getComingSoonMovies(): Movies
-
 }

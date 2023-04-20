@@ -1,5 +1,6 @@
 package com.yachikajoshi.movielist.domain.use_case
 
+import androidx.lifecycle.LiveData
 import com.yachikajoshi.movielist.common.Resource
 import com.yachikajoshi.movielist.data.model.Movies
 import com.yachikajoshi.movielist.domain.repo.MoviesRepository
@@ -13,7 +14,6 @@ class MovieListUseCase @Inject constructor(private val movieRepository: MoviesRe
 
     fun getTop10Movies(): Flow<Resource<Movies>> = flow {
         try {
-
             emit(Resource.Loading())
 
             val response = movieRepository.getTop10Movies()
