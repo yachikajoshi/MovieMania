@@ -1,26 +1,23 @@
 package com.yachikajoshi.movielist.ui.presentation
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.util.Log
+import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.yachikajoshi.movielist.data.model.Movies
 import com.yachikajoshi.movielist.ui.theme.MovieListTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,21 +26,40 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
             MovieListTheme {
                 val navController = rememberNavController()
-
                 val viewModel = hiltViewModel<MoviesViewModel>()
-
                 NavHost(navController = navController, startDestination = Screen.MovieList.route) {
                     composable(route = Screen.MovieList.route) {
-                        MovieList(viewModel.movieState.value, onMovieClicked = { index ->
-                            navController.navigate(Screen.MovieDetail.route)
-                        })
+                        MovieList(
+                            viewModel.movieState.value,
+                            viewModel.tvShows.value,
+                            onMovieClicked = { selectedMovie, type ->
+                                viewModel.selectedMovie(movie = selectedMovie)
+                                navController.navigate(Screen.MovieDetail.route + "/" + type)
+                            })
                     }
                     composable(
-                        route = Screen.MovieDetail.route
+                        route = Screen.MovieDetail.route + "/{movie_type}",
+                        arguments = listOf(navArgument("movie_type")
+                        {
+                            type = NavType.StringType
+                        })
                     ) { entry ->
-                        Detail(viewModel)
+                        val selectedMovie = viewModel.selectedMovie.value
+                        val type = entry.arguments!!.getString("movie_type") ?: ""
+                        var listOfMovies: List<Movies.MovieDetail> = listOf()
+                        if (type == "TOP_MOVIES") {
+                            listOfMovies = viewModel.movieState.value.data
+                        } else if (type == "TV_SHOWS") {
+                            listOfMovies = viewModel.tvShows.value.data
+                        }
+                        MovieDetailScreen(
+                            selected = selectedMovie,
+                            listOfMovies = listOfMovies,
+                            onBackPressed = { navController.navigateUp() }
+                        )
                     }
                 }
             }

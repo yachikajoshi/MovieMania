@@ -11,4 +11,7 @@ interface MovieAPIService {
 
     @GET("ComingSoon/k_20dozih9")
     suspend fun getComingSoonMovies(): Movies
+
+    @GET("Top250TVs/k_20dozih9")
+    suspend fun getTopTVShows(): Movies
 }

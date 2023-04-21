@@ -11,33 +11,28 @@ data class Movies(var items: List<MovieDetail>, var errorMessage: String) {
         var fullTitle: String = "Bla Bla",
         var year: String = "1997",
         var crew: String = "Dom",
-        var image: String="https://picsum.photos/id/237/200/300",
-        var rankUpDown: String="",
-        var imDbRating: String="",
-        var releaseState: String="",
-        var stars: String="",
-        var genres: String=""
+        var image: String = "https://picsum.photos/id/237/200/300",
+        var rankUpDown: String = "",
+        var imDbRating: String = "",
+        var releaseState: String = "",
+        var stars: String = "",
+        var genres: String = ""
     )
 }
 
-fun Movies.MovieDetail.toDomainMovie(): Movie =
+fun Movies.MovieDetail.toMovie(): Movie =
     Movie(
         movieId = this.id,
         title = this.title,
         image = this.image
     )
 
-fun Movies.MovieDetail.toDomainComingSoon(): ComingSoon =
-    ComingSoon(
+fun Movies.MovieDetail.toMovieDetail(): MovieDetail =
+    MovieDetail(
         movieId = this.id,
         title = this.title,
-        image = this.image,
         genres = this.genres,
-        releaseState = this.releaseState
-    )
-
-fun Movies.MovieDetail.toDomainMovieDetail(): MovieDetail =
-    MovieDetail(
+        releaseState = this.releaseState,
         image = this.image,
         fullTitle = this.fullTitle,
         crew = this.crew,

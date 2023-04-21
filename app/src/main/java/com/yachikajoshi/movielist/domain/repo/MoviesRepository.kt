@@ -12,5 +12,6 @@ interface MoviesRepository {
     suspend fun getTop10Movies(): Movies
 
     suspend fun getComingSoonMovies(): Movies
+    suspend fun getTopTVShows(): Movies
 
 }

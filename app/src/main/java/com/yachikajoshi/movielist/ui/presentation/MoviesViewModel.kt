@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yachikajoshi.movielist.common.Resource
 import com.yachikajoshi.movielist.data.model.Movies
+import com.yachikajoshi.movielist.data.model.toMovie
+import com.yachikajoshi.movielist.domain.model.Movie
+import com.yachikajoshi.movielist.domain.model.MovieDetail
 import com.yachikajoshi.movielist.domain.use_case.MovieListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -17,6 +20,7 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
     init {
         getTop10MovieList()
         getUpcomingMovieList()
+        getTopTVShows()
     }
 
     private var _movieState = mutableStateOf(MovieState())
@@ -33,7 +37,8 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
                     _movieState.value = MovieState(isLoading = true)
                 }
                 is Resource.Success -> {
-                    _movieState.value = MovieState(data = response.data!!.items)
+                    _movieState.value =
+                        MovieState(data = response.data!!.items.take(15))
                 }
             }
         }
@@ -52,12 +57,39 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
                     _movieState.value = MovieState(isLoading = true)
                 }
                 is Resource.Success -> {
-                    _movieState.value = MovieState(data = response.data!!.items)
+                    _movieState.value =
+                        MovieState(data = response.data!!.items.take(15))
                 }
             }
         }
     }
 
+    private val _tvShows = mutableStateOf(MovieState())
+    val tvShows get() = _tvShows
+
+    private fun getTopTVShows() {
+        viewModelScope.launch {
+            when (val response = movieListUseCase.getTopTVShows()) {
+                is Resource.Error -> {
+                    _tvShows.value = MovieState(error = response.message ?: "")
+                }
+                is Resource.Loading -> {
+                    _tvShows.value = MovieState(isLoading = true)
+                }
+                is Resource.Success -> {
+                    _tvShows.value =
+                        MovieState(data = response.data!!.items.take(15))
+                }
+            }
+        }
+    }
+
+    private val _selectedMovie = mutableStateOf(Movies.MovieDetail())
+    val selectedMovie get() = _selectedMovie
+
+    fun selectedMovie(movie: Movies.MovieDetail) {
+        _selectedMovie.value = movie
+    }
 }
 
 data class MovieState(

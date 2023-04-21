@@ -20,4 +20,7 @@ class GetMoviesImpl(private val movieAPIService: MovieAPIService) : MoviesReposi
     override suspend fun getComingSoonMovies(): Movies =
         movieAPIService.getComingSoonMovies()
 
+    override suspend fun getTopTVShows(): Movies =
+        movieAPIService.getTopTVShows()
+
 }
