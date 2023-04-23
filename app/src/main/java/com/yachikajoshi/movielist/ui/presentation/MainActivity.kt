@@ -1,20 +1,14 @@
 package com.yachikajoshi.movielist.ui.presentation
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -35,8 +29,8 @@ class MainActivity : ComponentActivity() {
             MovieListTheme {
                 val navController = rememberNavController()
                 val viewModel = hiltViewModel<MoviesViewModel>()
-                NavHost(navController = navController, startDestination = Screen.MovieList.route) {
-                    composable(route = Screen.MovieList.route) {
+                NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
+                    composable(route = Screen.Dashboard.route) {
                         MovieList(
                             viewModel.movieState.value,
                             viewModel.tvShows.value,
