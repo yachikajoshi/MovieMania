@@ -2,6 +2,7 @@ package com.yachikajoshi.movielist.ui.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -15,11 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.yachikajoshi.movielist.R
@@ -68,15 +71,9 @@ fun MovieDetailScreen(
                 if (bookmarks.contains(selectedMovie))
                     bookmarks.remove(selectedMovie)
                 else bookmarks.add(selectedMovie)
-            })
+            }, onBackPressed = { onBackPressed() })
             PlaySection(
-                isBookmarked = isBookmarked,
-                movieName = selectedMovie.fullTitle,
-                onBookmarkChanged = {
-                    if (bookmarks.contains(selectedMovie))
-                        bookmarks.remove(selectedMovie)
-                    else bookmarks.add(selectedMovie)
-                }
+                movieName = selectedMovie.fullTitle
             )
             Divider()
             Spacer(modifier = Modifier.height(16.dp))
@@ -100,12 +97,11 @@ fun MovieDetailScreen(
     }
 }
 
+@Preview
 @Composable
 fun PlaySection(
     modifier: Modifier = Modifier,
-    isBookmarked: Boolean,
-    movieName: String,
-    onBookmarkChanged: () -> Unit
+    movieName: String = "Hello"
 ) {
     Column(
         modifier = modifier
@@ -119,27 +115,6 @@ fun PlaySection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                IconButton(
-                    onClick = onBookmarkChanged
-                ) {
-                    Icon(
-                        painter = if (isBookmarked) painterResource(id = R.drawable.baseline_bookmark_24) else painterResource(
-                            id = R.drawable.outline_bookmark_border_24
-                        ),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.onSurface
-                    )
-                }
-                Text(
-                    text = "My List",
-                    color = MaterialTheme.colors.onSurface,
-                    style = MaterialTheme.typography.caption
-                )
-            }
             FloatingActionButton(
                 onClick = { /*TODO*/ },
                 backgroundColor = MaterialTheme.colors.primary,
@@ -151,29 +126,6 @@ fun PlaySection(
                     contentDescription = null
                 )
             }
-
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                IconButton(
-                    onClick = onBookmarkChanged
-                ) {
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.outline_share_24
-                        ),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.onSurface
-                    )
-                }
-                Text(
-                    text = "Share",
-                    color = MaterialTheme.colors.onSurface,
-                    style = MaterialTheme.typography.caption
-                )
-            }
-
         }
         Column(
             modifier = modifier
@@ -202,7 +154,8 @@ fun MovieHeader(
     modifier: Modifier = Modifier,
     movie: Movies.MovieDetail,
     isBookmarked: Boolean,
-    onBookmarkChanged: () -> Unit
+    onBookmarkChanged: () -> Unit,
+    onBackPressed: () -> Unit
 ) {
     Box(
         Modifier
@@ -212,29 +165,49 @@ fun MovieHeader(
             model = movie.image,
             contentDescription = null,
             modifier = modifier
-                .fillMaxWidth()
-                .fillMaxHeight(), contentScale = ContentScale.Fit
+                .fillMaxSize(), contentScale = ContentScale.FillWidth
         )
-        TopAppBar(elevation = 0.dp, modifier = modifier, title = {}, navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_arrow_back_24),
-                    contentDescription = "", tint = Color.White
-                )
+        TopAppBar(
+            elevation = 0.dp,
+
+            modifier = modifier,
+            title = {},
+            navigationIcon = {
+                IconButton(onClick = { onBackPressed() }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                        contentDescription = "", tint = Color.White
+                    )
+                }
+            },
+            backgroundColor = Color.Transparent,
+            actions = {
+                Row() {
+                    IconButton(
+                        onClick = onBookmarkChanged
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id = R.drawable.outline_share_24
+                            ),
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(
+                        onClick = onBookmarkChanged
+                    ) {
+                        Icon(
+                            painter = if (isBookmarked) painterResource(id = R.drawable.baseline_bookmark_24) else painterResource(
+                                id = R.drawable.outline_bookmark_border_24
+                            ),
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+                    }
+                }
             }
-        }, backgroundColor = Color.Transparent, actions = {
-            IconButton(
-                onClick = onBookmarkChanged
-            ) {
-                Icon(
-                    painter = if (isBookmarked) painterResource(id = R.drawable.baseline_bookmark_24) else painterResource(
-                        id = R.drawable.outline_bookmark_border_24
-                    ),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.onSurface
-                )
-            }
-        })
+        )
     }
 
 }
@@ -281,18 +254,6 @@ fun MovieDescription(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
-        Text(
-            text = "The Plot",
-            color = MaterialTheme.colors.onSurface,
-            style = MaterialTheme.typography.subtitle1
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            color = MaterialTheme.colors.onSurface.copy(alpha = 0.75f),
-            text = movie.imDbRating,
-            style = MaterialTheme.typography.body2
-        )
-        Spacer(modifier = Modifier.height(24.dp))
         if (movie.genres.isNotEmpty()) {
             Text(
                 text = spannedTextGenres,

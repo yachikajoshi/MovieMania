@@ -41,7 +41,7 @@ fun MovieList(
 ) {
 
     //todo remove below code after test
-    modelStateOfTopMovies.isLoading = true
+//    modelStateOfTopMovies.isLoading = true
 
     val context = LocalContext.current
     LaunchedEffect(key1 = modelStateOfTopMovies.error, block = {
@@ -139,7 +139,7 @@ fun MovieItems(movie: Movies.MovieDetail, modifier: Modifier = Modifier) {
             .data(movie.image)
             .crossfade(true)
             .build(),
-        placeholder = painterResource(R.drawable.ic_launcher_background),
+        placeholder = painterResource(R.drawable.outline_share_24),
         contentDescription = "dec",
         contentScale = ContentScale.Crop,
         modifier = modifier
