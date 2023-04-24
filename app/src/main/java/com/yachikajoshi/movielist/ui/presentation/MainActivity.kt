@@ -31,8 +31,9 @@ class MainActivity : ComponentActivity() {
                 val viewModel = hiltViewModel<MoviesViewModel>()
                 NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
                     composable(route = Screen.Dashboard.route) {
-                        MovieList(
-                            viewModel.movieState.value,
+//                        MovieList(
+//                            )
+                        Dashboard(navController, viewModel.movieState.value,
                             viewModel.tvShows.value,
                             onMovieClicked = { selectedMovie, type ->
                                 viewModel.selectedMovie(movie = selectedMovie)
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
                             type = NavType.StringType
                         })
                     ) { entry ->
+//                        Dashboard(navController)
                         val selectedMovie = viewModel.selectedMovie.value
                         val type = entry.arguments!!.getString("movie_type") ?: ""
                         var listOfMovies: List<Movies.MovieDetail> = listOf()
@@ -63,8 +65,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        hideSystemUI()
+//        hideSystemUI()
     }
+
     fun hideSystemUI() {
         //Hides the ugly action bar at the top
         actionBar?.hide()
