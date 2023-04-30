@@ -61,11 +61,11 @@ fun MovieDetailScreen(
             modifier = Modifier
                 .verticalScroll(scrollState)
                 .padding(it)
-                .background(
-                    Brush.verticalGradient(
-                        listOf(MediumPurple, DarkPurple)
-                    )
-                )
+//                .background(
+//                    Brush.verticalGradient(
+//                        listOf(MediumPurple, DarkPurple)
+//                    )
+//                )
         ) {
             MovieHeader(movie = selectedMovie, isBookmarked = isBookmarked, onBookmarkChanged = {
                 if (bookmarks.contains(selectedMovie))
@@ -106,7 +106,8 @@ fun PlaySection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 16.dp),
+            .padding(top = 16.dp)
+            .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Gray))),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
