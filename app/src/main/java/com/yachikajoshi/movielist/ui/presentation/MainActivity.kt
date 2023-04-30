@@ -7,8 +7,6 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -16,7 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.yachikajoshi.movielist.data.model.Movies
+import com.yachikajoshi.movielist.data.model.UpcomingMovies
 import com.yachikajoshi.movielist.ui.theme.MovieListTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,10 +29,8 @@ class MainActivity : ComponentActivity() {
                 val viewModel = hiltViewModel<MoviesViewModel>()
                 NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
                     composable(route = Screen.Dashboard.route) {
-//                        MovieList(
-//                            )
                         Dashboard(navController, viewModel.movieState.value,
-                            viewModel.tvShows.value,
+                            viewModel.upcomingMovieList.value,
                             onMovieClicked = { selectedMovie, type ->
                                 viewModel.selectedMovie(movie = selectedMovie)
                                 navController.navigate(Screen.MovieDetail.route + "/" + type)
@@ -54,11 +50,11 @@ class MainActivity : ComponentActivity() {
                     ) { entry ->
                         val selectedMovie = viewModel.selectedMovie.value
                         val type = entry.arguments!!.getString("movie_type") ?: ""
-                        var listOfMovies: List<Movies.MovieDetail> = listOf()
+                        var listOfMovies: List<UpcomingMovies.Movie> = listOf()
                         if (type == "TOP_MOVIES") {
                             listOfMovies = viewModel.movieState.value.data
                         } else if (type == "TV_SHOWS") {
-                            listOfMovies = viewModel.tvShows.value.data
+                            listOfMovies = viewModel.upcomingMovieList.value.data
                         }
                         MovieDetailScreen(
                             selected = selectedMovie,

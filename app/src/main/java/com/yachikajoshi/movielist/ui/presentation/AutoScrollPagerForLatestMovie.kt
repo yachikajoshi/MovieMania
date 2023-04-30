@@ -24,6 +24,7 @@ import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
+import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
 import com.yachikajoshi.movielist.ui.theme.Purple200
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.yield
@@ -55,7 +56,8 @@ fun LatestMovies(movieState: MovieState) {
         HorizontalPager(
             pageCount = movieState.data.size, state = pagerState,
             modifier = Modifier
-                .weight(1f).fillMaxWidth()
+                .weight(1f)
+                .fillMaxWidth()
         ) { page ->
 //            Card(
 //                backgroundColor = Color.Gray.copy(alpha = 0.4f),
@@ -80,16 +82,16 @@ fun LatestMovies(movieState: MovieState) {
 //                    }
 //                    .fillMaxWidth()
 //            ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(movieState.data[page].image)
-                        .crossfade(true)
-                        .scale(Scale.FIT)
-                        .build(),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(IMAGE_URL + movieState.data[page].backdrop_path)
+                    .crossfade(true)
+                    .scale(Scale.FIT)
+                    .build(),
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
 //                        .offset {
 //                            // Calculate the offset for the current page from the
 //                            // scroll position
@@ -101,8 +103,8 @@ fun LatestMovies(movieState: MovieState) {
 //                                y = 0,
 //                            )
 //                        }
-                )
-            }
+            )
+        }
 //        }
     }
 }
