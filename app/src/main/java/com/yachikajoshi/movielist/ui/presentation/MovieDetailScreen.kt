@@ -21,14 +21,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.data.model.Movies
-import com.yachikajoshi.movielist.ui.theme.DarkPurple
-import com.yachikajoshi.movielist.ui.theme.MediumPurple
+import com.yachikajoshi.movielist.ui.theme.*
 
 @Composable
 fun MovieDetailScreen(
@@ -61,24 +61,18 @@ fun MovieDetailScreen(
             modifier = Modifier
                 .verticalScroll(scrollState)
                 .padding(it)
-//                .background(
-//                    Brush.verticalGradient(
-//                        listOf(MediumPurple, DarkPurple)
-//                    )
-//                )
+                .background(
+                    Background
+                )
         ) {
             MovieHeader(movie = selectedMovie, isBookmarked = isBookmarked, onBookmarkChanged = {
                 if (bookmarks.contains(selectedMovie))
                     bookmarks.remove(selectedMovie)
                 else bookmarks.add(selectedMovie)
             }, onBackPressed = { onBackPressed() })
-            PlaySection(
-                movieName = selectedMovie.fullTitle
-            )
             Divider()
             Spacer(modifier = Modifier.height(16.dp))
             MovieDescription(
-                modifier = Modifier.padding(horizontal = 16.dp),
                 movie = selectedMovie
             )
             LazyRow(
@@ -106,8 +100,7 @@ fun PlaySection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 16.dp)
-            .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Gray))),
+            .padding(top = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -221,14 +214,14 @@ fun MovieDescription(
     val spannedTextGenres = buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                color = MaterialTheme.colors.secondary,
+                color = ViewAllTextColor,
             )
         ) {
             append("Genres : ")
         }
         withStyle(
             style = SpanStyle(
-                color = MaterialTheme.colors.onSurface,
+                color = Color(0XFFFFFFFF),
             )
         ) {
             append(movie.genres)
@@ -237,14 +230,15 @@ fun MovieDescription(
     val spannedTextCrew = buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                color = MaterialTheme.colors.secondary,
+                color = ViewAllTextColor,
+                fontWeight = FontWeight.Bold
             )
         ) {
             append("Crew : ")
         }
         withStyle(
             style = SpanStyle(
-                color = MaterialTheme.colors.onSurface,
+                color = Color(0XFFFFFFFF),
             )
         ) {
             append(movie.crew)
@@ -253,22 +247,29 @@ fun MovieDescription(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 10.dp)
     ) {
+        Text(
+            color = Color.White,
+            text = movie.fullTitle,
+            style = MaterialTheme.typography.h5
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+
         if (movie.genres.isNotEmpty()) {
             Text(
                 text = spannedTextGenres,
                 style = MaterialTheme.typography.body2
             )
+            Spacer(modifier = Modifier.height(8.dp))
         }
-        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = spannedTextCrew,
             style = MaterialTheme.typography.body2
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
-            color = MaterialTheme.colors.onSurface,
+            color = Color(0XFFFFFFFF),
             text = "Suggested Movies",
             style = MaterialTheme.typography.subtitle1
         )

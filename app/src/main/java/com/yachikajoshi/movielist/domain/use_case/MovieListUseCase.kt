@@ -1,5 +1,6 @@
 package com.yachikajoshi.movielist.domain.use_case
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.yachikajoshi.movielist.common.Resource
 import com.yachikajoshi.movielist.data.model.Movies
@@ -16,9 +17,10 @@ class MovieListUseCase @Inject constructor(private val movieRepository: MoviesRe
 
     suspend fun getTop10MoviesList(): Resource<Movies> {
         val response = try {
+            Log.d("sdgfdgs", "getTop10MoviesList: ${ movieRepository.getTop10Movies()}")
             movieRepository.getTop10Movies()
         } catch (e: Exception) {
-            return Resource.Error("An unknown exception occured: ${e.message}")
+            return Resource.Error("An unknown exception occurred: ${e.message}")
         }
         return Resource.Success(response)
     }
@@ -27,7 +29,7 @@ class MovieListUseCase @Inject constructor(private val movieRepository: MoviesRe
         val response = try {
             movieRepository.getTop10Movies()
         } catch (e: Exception) {
-            return Resource.Error("An unknown exception occured: ${e.message}")
+            return Resource.Error("An unknown exception occurred: ${e.message}")
         }
         return Resource.Success(response)
     }
@@ -35,7 +37,7 @@ class MovieListUseCase @Inject constructor(private val movieRepository: MoviesRe
         val response = try {
             movieRepository.getTopTVShows()
         } catch (e: Exception) {
-            return Resource.Error("An unknown exception occured: ${e.message}")
+            return Resource.Error("An unknown exception occurred: ${e.message}")
         }
         return Resource.Success(response)
     }

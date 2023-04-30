@@ -39,10 +39,6 @@ fun MovieList(
     modelStateOfTvShows: MovieState,
     onMovieClicked: (movie: Movies.MovieDetail, type: MovieType) -> Unit
 ) {
-
-    //todo remove below code after test
-//    modelStateOfTopMovies.isLoading = true
-
     val context = LocalContext.current
     LaunchedEffect(key1 = modelStateOfTopMovies.error, block = {
         Toast.makeText(context, modelStateOfTopMovies.error, Toast.LENGTH_LONG).show()
