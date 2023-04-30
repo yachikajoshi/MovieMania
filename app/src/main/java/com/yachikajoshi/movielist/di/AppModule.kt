@@ -43,11 +43,7 @@ class AppModule {
         retrofit.create(MovieAPIService::class.java)
 
 
-//    @Provides
-//    fun provideTop10MoviesRepository(apiService: MovieAPIService): MoviesRepository =
-//        GetMoviesImpl(apiService)
-
     @Provides
-    fun provideTop10MoviesRepository(): MoviesRepository =
-        FakeMovieRepo()
+    fun provideTop10MoviesRepository(apiService: MovieAPIService): MoviesRepository =
+        GetMoviesImpl(apiService)
 }
