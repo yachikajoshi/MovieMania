@@ -2,6 +2,7 @@ package com.yachikajoshi.movielist.di
 
 import com.yachikajoshi.movielist.common.Constants
 import com.yachikajoshi.movielist.data.datasource.MovieAPIService
+import com.yachikajoshi.movielist.data.repo.FakeMovieRepo
 import com.yachikajoshi.movielist.data.repo.GetMoviesImpl
 import com.yachikajoshi.movielist.domain.repo.MoviesRepository
 import dagger.Module
@@ -42,7 +43,11 @@ class AppModule {
         retrofit.create(MovieAPIService::class.java)
 
 
+//    @Provides
+//    fun provideTop10MoviesRepository(apiService: MovieAPIService): MoviesRepository =
+//        GetMoviesImpl(apiService)
+
     @Provides
-    fun provideTop10MoviesRepository(apiService: MovieAPIService): MoviesRepository =
-        GetMoviesImpl(apiService)
+    fun provideTop10MoviesRepository(): MoviesRepository =
+        FakeMovieRepo()
 }

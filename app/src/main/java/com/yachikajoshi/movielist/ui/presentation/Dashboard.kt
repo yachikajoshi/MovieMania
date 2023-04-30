@@ -1,9 +1,9 @@
 package com.yachikajoshi.movielist.ui.presentation
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -21,7 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -38,6 +40,7 @@ import coil.size.Scale
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.shimmerEffect
 import com.yachikajoshi.movielist.data.model.Movies
+import com.yachikajoshi.movielist.ui.theme.BottomAppBarColor
 import com.yachikajoshi.movielist.ui.theme.Purple200
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.yield
@@ -56,16 +59,16 @@ fun Dashboard(
 
     Scaffold(
         backgroundColor = Color(0xff21212a),
-        topBar = { TopAppBar() },
+        topBar = { TopAppBar(modelStateOfTopMovies) },
         bottomBar = { BottomNavigation(navController) },
         content = {
             //Main content
-            MainContent(
-                paddingValues = it,
-                modelStateOfTopMovies = modelStateOfTopMovies,
-                modelStateOfTvShows = modelStateOfTvShows,
-                onMovieClicked = onMovieClicked
-            )
+               MainContent(
+                   paddingValues = it,
+                   modelStateOfTopMovies = modelStateOfTopMovies,
+                   modelStateOfTvShows = modelStateOfTvShows,
+                   onMovieClicked = onMovieClicked
+               )
         }
     )
 }
@@ -83,17 +86,9 @@ fun MainContent(
     Column(
         modifier = Modifier
             .padding(paddingValues)
+            .verticalScroll(rememberScrollState())
     ) {
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(
-                horizontal = 10.dp, vertical = 10.dp
-            ),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-
-        }
+        LatestMovies(modelStateOfTopMovies)
         Text(
             text = "Top Movies",
             modifier = Modifier
@@ -169,37 +164,40 @@ fun MainContent(
     }
 }
 
-@Preview
+//@Preview
 @Composable
-fun TopAppBar() {
-    TopAppBar(backgroundColor = Color.Transparent,
-        title = {},
-        elevation = 0.dp,
-        navigationIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.outline_share_24),
-                    contentDescription = null,
-                    tint = Color.White
-                )
-            }
-        },
-        actions = {
-            Row() {
-                IconButton(
-                    onClick = { /*TODO*/ }
-                ) {
+fun TopAppBar(modelStateOfTopMovies: MovieState) {
+    Box() {
+
+        TopAppBar(backgroundColor = Color.Transparent,
+            title = {},
+            elevation = 0.dp,
+            navigationIcon = {
+                IconButton(onClick = { /*TODO*/ }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_launcher_background),
+                        painter = painterResource(id = R.drawable.outline_share_24),
                         contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(CircleShape)
+                        tint = Color.White
                     )
                 }
-            }
-        })
+            },
+            actions = {
+                Row() {
+                    IconButton(
+                        onClick = { /*TODO*/ }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_launcher_background),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                        )
+                    }
+                }
+            })
+    }
 }
 
 @Composable
@@ -209,7 +207,7 @@ fun BottomNavigation(navController: NavController) {
         BottomNavItem.Search
     )
     BottomNavigation(
-        backgroundColor = Color(0xff2c2c38),
+        backgroundColor = BottomAppBarColor,
         modifier = Modifier.clip(RoundedCornerShape(topEnd = 30.dp, topStart = 30.dp))
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

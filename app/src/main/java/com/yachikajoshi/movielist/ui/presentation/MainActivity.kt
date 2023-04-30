@@ -40,6 +40,11 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(Screen.MovieDetail.route + "/" + type)
                             })
                     }
+                    composable(route = Screen.Search.route) {
+                        Search(onBackPressed = {
+                            navController.navigateUp()
+                        })
+                    }
                     composable(
                         route = Screen.MovieDetail.route + "/{movie_type}",
                         arguments = listOf(navArgument("movie_type")
@@ -47,7 +52,6 @@ class MainActivity : ComponentActivity() {
                             type = NavType.StringType
                         })
                     ) { entry ->
-//                        Dashboard(navController)
                         val selectedMovie = viewModel.selectedMovie.value
                         val type = entry.arguments!!.getString("movie_type") ?: ""
                         var listOfMovies: List<Movies.MovieDetail> = listOf()

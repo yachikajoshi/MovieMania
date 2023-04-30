@@ -1,9 +1,5 @@
 package com.yachikajoshi.movielist.data.model
 
-import com.yachikajoshi.movielist.domain.model.ComingSoon
-import com.yachikajoshi.movielist.domain.model.Movie
-import com.yachikajoshi.movielist.domain.model.MovieDetail
-
 data class Movies(var items: List<MovieDetail>, var errorMessage: String) {
     data class MovieDetail(
         var id: String = "",
@@ -19,23 +15,3 @@ data class Movies(var items: List<MovieDetail>, var errorMessage: String) {
         var genres: String = ""
     )
 }
-
-fun Movies.MovieDetail.toMovie(): Movie =
-    Movie(
-        movieId = this.id,
-        title = this.title,
-        image = this.image
-    )
-
-fun Movies.MovieDetail.toMovieDetail(): MovieDetail =
-    MovieDetail(
-        movieId = this.id,
-        title = this.title,
-        genres = this.genres,
-        releaseState = this.releaseState,
-        image = this.image,
-        fullTitle = this.fullTitle,
-        crew = this.crew,
-        imDbRating = this.imDbRating,
-        stars = this.stars
-    )
