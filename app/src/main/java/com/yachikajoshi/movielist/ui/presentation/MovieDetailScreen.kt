@@ -2,7 +2,6 @@ package com.yachikajoshi.movielist.ui.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -14,9 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -27,17 +24,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.yachikajoshi.movielist.R
-import com.yachikajoshi.movielist.data.model.Movies
+import com.yachikajoshi.movielist.common.Constants
+import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
+import com.yachikajoshi.movielist.data.model.UpcomingMovies
 import com.yachikajoshi.movielist.ui.theme.*
 
 @Composable
 fun MovieDetailScreen(
-    selected: Movies.MovieDetail,
-    listOfMovies: List<Movies.MovieDetail>,
+    selected: UpcomingMovies.Movie,
+    listOfMovies: List<UpcomingMovies.Movie>,
     onBackPressed: () -> Unit
 ) {
     var selectedMovie by remember { mutableStateOf(selected) }
-    val bookmarks = remember { mutableStateListOf<Movies.MovieDetail>() }
+    val bookmarks = remember { mutableStateListOf<UpcomingMovies.Movie>() }
     val scrollState = rememberScrollState()
 
     val isBookmarked by remember {
@@ -146,7 +145,7 @@ fun PlaySection(
 @Composable
 fun MovieHeader(
     modifier: Modifier = Modifier,
-    movie: Movies.MovieDetail,
+    movie: UpcomingMovies.Movie,
     isBookmarked: Boolean,
     onBookmarkChanged: () -> Unit,
     onBackPressed: () -> Unit
@@ -155,8 +154,9 @@ fun MovieHeader(
         Modifier
             .fillMaxWidth()
     ) {
+
         AsyncImage(
-            model = movie.image,
+            model = Constants.IMAGE_URL + movie.poster_path,
             contentDescription = null,
             modifier = modifier
                 .fillMaxSize(), contentScale = ContentScale.FillWidth
@@ -209,7 +209,7 @@ fun MovieHeader(
 @Composable
 fun MovieDescription(
     modifier: Modifier = Modifier,
-    movie: Movies.MovieDetail
+    movie: UpcomingMovies.Movie
 ) {
     val spannedTextGenres = buildAnnotatedString {
         withStyle(
@@ -224,7 +224,7 @@ fun MovieDescription(
                 color = Color(0XFFFFFFFF),
             )
         ) {
-            append(movie.genres)
+//            append(movie.genre_ids.forEach {  })
         }
     }
     val spannedTextCrew = buildAnnotatedString {
@@ -241,7 +241,7 @@ fun MovieDescription(
                 color = Color(0XFFFFFFFF),
             )
         ) {
-            append(movie.crew)
+//            append(movie.crew)
         }
     }
     Column(
@@ -251,18 +251,18 @@ fun MovieDescription(
     ) {
         Text(
             color = Color.White,
-            text = movie.fullTitle,
+            text = movie.original_title,
             style = MaterialTheme.typography.h5
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        if (movie.genres.isNotEmpty()) {
-            Text(
-                text = spannedTextGenres,
-                style = MaterialTheme.typography.body2
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+//        if (movie.genres.isNotEmpty()) {
+//            Text(
+//                text = spannedTextGenres,
+//                style = MaterialTheme.typography.body2
+//            )
+//            Spacer(modifier = Modifier.height(8.dp))
+//        }
         Text(
             text = spannedTextCrew,
             style = MaterialTheme.typography.body2
@@ -279,11 +279,11 @@ fun MovieDescription(
 @Composable
 fun MovieItem(
     modifier: Modifier = Modifier,
-    movie: Movies.MovieDetail,
-    onClicked: (Movies.MovieDetail) -> Unit
+    movie: UpcomingMovies.Movie,
+    onClicked: (UpcomingMovies.Movie) -> Unit
 ) {
     AsyncImage(
-        model = movie.image,
+        model = IMAGE_URL+movie.poster_path,
         contentDescription = null,
         modifier = modifier
             .height(180.dp)

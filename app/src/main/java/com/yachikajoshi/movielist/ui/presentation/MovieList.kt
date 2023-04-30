@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,8 +25,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yachikajoshi.movielist.R
+import com.yachikajoshi.movielist.common.Constants
 import com.yachikajoshi.movielist.common.shimmerEffect
-import com.yachikajoshi.movielist.data.model.Movies
+import com.yachikajoshi.movielist.data.model.UpcomingMovies
 import com.yachikajoshi.movielist.ui.theme.DarkPurple
 import com.yachikajoshi.movielist.ui.theme.MediumPurple
 
@@ -37,7 +36,7 @@ import com.yachikajoshi.movielist.ui.theme.MediumPurple
 fun MovieList(
     modelStateOfTopMovies: MovieState,
     modelStateOfTvShows: MovieState,
-    onMovieClicked: (movie: Movies.MovieDetail, type: MovieType) -> Unit
+    onMovieClicked: (movie: UpcomingMovies.Movie, type: MovieType) -> Unit
 ) {
     val context = LocalContext.current
     LaunchedEffect(key1 = modelStateOfTopMovies.error, block = {
@@ -129,10 +128,10 @@ fun MovieList(
 }
 
 @Composable
-fun MovieItems(movie: Movies.MovieDetail, modifier: Modifier = Modifier) {
+fun MovieItems(movie: UpcomingMovies.Movie, modifier: Modifier = Modifier) {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
-            .data(movie.image)
+            .data(Constants.IMAGE_URL + movie.poster_path)
             .crossfade(true)
             .build(),
         placeholder = painterResource(R.drawable.outline_share_24),

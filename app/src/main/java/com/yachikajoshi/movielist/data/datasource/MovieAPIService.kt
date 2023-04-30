@@ -1,17 +1,26 @@
 package com.yachikajoshi.movielist.data.datasource
 
-import com.yachikajoshi.movielist.data.model.Movies
-import retrofit2.Response
+import com.yachikajoshi.movielist.data.model.MovieTrailer
+import com.yachikajoshi.movielist.data.model.UpcomingMovies
 import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface MovieAPIService {
 
-    @GET("MostPopularMovies/k_20dozih9")
-    suspend fun getTop10Movies(): Movies
+    @GET("movie/top_rated")
+    suspend fun getTop10Movies(@Query("api_key") apiKey: String): UpcomingMovies
 
-    @GET("ComingSoon/k_20dozih9")
-    suspend fun getComingSoonMovies(): Movies
+    @GET("movie/upcoming")
+    suspend fun getComingSoonMovies(@Query("api_key") apiKey: String): UpcomingMovies
 
-    @GET("Top250TVs/k_20dozih9")
-    suspend fun getTopTVShows(): Movies
+    @GET("movie/latest")
+    suspend fun getTopTVShows(@Query("api_key") apiKey: String): UpcomingMovies
+
+    @GET("movie/{movieId}/videos")
+    suspend fun getTrailer(
+        @Path("movieId") movieId: String,
+        @Query("api_key") apiKey: String
+    ): MovieTrailer
+
 }

@@ -2,7 +2,6 @@ package com.yachikajoshi.movielist.di
 
 import com.yachikajoshi.movielist.common.Constants
 import com.yachikajoshi.movielist.data.datasource.MovieAPIService
-import com.yachikajoshi.movielist.data.repo.FakeMovieRepo
 import com.yachikajoshi.movielist.data.repo.GetMoviesImpl
 import com.yachikajoshi.movielist.domain.repo.MoviesRepository
 import dagger.Module
