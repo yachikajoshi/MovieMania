@@ -91,10 +91,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-@Composable
-fun Detail(viewModel: MoviesViewModel) {
-    Text(text = "helloooooooo")
-}
-
-
