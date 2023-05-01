@@ -1,5 +1,6 @@
 package com.yachikajoshi.movielist.ui.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -22,19 +25,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yachikajoshi.movielist.R
-import com.yachikajoshi.movielist.common.Constants
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
 import com.yachikajoshi.movielist.data.model.UpcomingMovies
-import com.yachikajoshi.movielist.ui.theme.*
+import com.yachikajoshi.movielist.ui.theme.Background
+import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
+
 
 @Composable
 fun MovieDetailScreen(
     selected: UpcomingMovies.Movie,
     listOfMovies: List<UpcomingMovies.Movie>,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    trailerKey: String
 ) {
+
     var selectedMovie by remember { mutableStateOf(selected) }
     val bookmarks = remember { mutableStateListOf<UpcomingMovies.Movie>() }
     val scrollState = rememberScrollState()
@@ -64,11 +74,16 @@ fun MovieDetailScreen(
                     Background
                 )
         ) {
-            MovieHeader(movie = selectedMovie, isBookmarked = isBookmarked, onBookmarkChanged = {
-                if (bookmarks.contains(selectedMovie))
-                    bookmarks.remove(selectedMovie)
-                else bookmarks.add(selectedMovie)
-            }, onBackPressed = { onBackPressed() })
+            MovieHeader(
+                trailerKey = trailerKey,
+                movie = selectedMovie,
+                isBookmarked = isBookmarked,
+                onBookmarkChanged = {
+                    if (bookmarks.contains(selectedMovie))
+                        bookmarks.remove(selectedMovie)
+                    else bookmarks.add(selectedMovie)
+                },
+                onBackPressed = { onBackPressed() })
             Divider()
             Spacer(modifier = Modifier.height(16.dp))
             MovieDescription(
@@ -144,6 +159,7 @@ fun PlaySection(
 
 @Composable
 fun MovieHeader(
+    trailerKey: String,
     modifier: Modifier = Modifier,
     movie: UpcomingMovies.Movie,
     isBookmarked: Boolean,
@@ -155,15 +171,16 @@ fun MovieHeader(
             .fillMaxWidth()
     ) {
 
-        AsyncImage(
-            model = Constants.IMAGE_URL + movie.poster_path,
-            contentDescription = null,
-            modifier = modifier
-                .fillMaxSize(), contentScale = ContentScale.FillWidth
-        )
+
+        ExoPlayerView(videoId = trailerKey)
+//        AsyncImage(
+//            model = IMAGE_URL + movie.poster_path,
+//            contentDescription = null,
+//            modifier = modifier
+//                .fillMaxSize(), contentScale = ContentScale.FillWidth
+//        )
         TopAppBar(
             elevation = 0.dp,
-
             modifier = modifier,
             title = {},
             navigationIcon = {
@@ -255,14 +272,6 @@ fun MovieDescription(
             style = MaterialTheme.typography.h5
         )
         Spacer(modifier = Modifier.height(10.dp))
-
-//        if (movie.genres.isNotEmpty()) {
-//            Text(
-//                text = spannedTextGenres,
-//                style = MaterialTheme.typography.body2
-//            )
-//            Spacer(modifier = Modifier.height(8.dp))
-//        }
         Text(
             text = spannedTextCrew,
             style = MaterialTheme.typography.body2
@@ -283,7 +292,7 @@ fun MovieItem(
     onClicked: (UpcomingMovies.Movie) -> Unit
 ) {
     AsyncImage(
-        model = IMAGE_URL+movie.poster_path,
+        model = IMAGE_URL + movie.poster_path,
         contentDescription = null,
         modifier = modifier
             .height(180.dp)
@@ -293,3 +302,35 @@ fun MovieItem(
         contentScale = ContentScale.Crop
     )
 }
+
+@Composable
+fun ExoPlayerView(videoId: String) {
+    Log.d("ididid", "ExoPlayerView: $videoId")
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val youTubePlayerView = remember {
+        YouTubePlayerView(context).apply {
+            addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                override fun onReady(youTubePlayer: YouTubePlayer) {
+                    super.onReady(youTubePlayer)
+                    youTubePlayer.loadVideo(videoId, 0f)
+                }
+            })
+        }
+    }
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { youTubePlayerView }
+    )
+
+    DisposableEffect(key1 = youTubePlayerView, effect = {
+        lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
+        }
+    })
+}
+
+
+
+

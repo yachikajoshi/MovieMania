@@ -25,7 +25,7 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
     private val _upcomingMovieList = mutableStateOf(MovieState())
     val upcomingMovieList get() = _upcomingMovieList
 
-    private val _trailer = mutableStateOf(TrailerState())
+    private val _trailer = mutableStateOf(TrailerState(emptyList()))
     val trailer get() = _trailer
 
     init {
@@ -70,11 +70,13 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
         }
     }
 
-    private fun getTrailer(movieId: String) {
+    fun getTrailer(movieId: String) {
         viewModelScope.launch {
             when (val response = movieListUseCase.getTrailer(movieId)) {
-                is Resource.Error -> _trailer.value = TrailerState(error = response.message ?: "")
-                is Resource.Loading -> _trailer.value = TrailerState(isLoading = true)
+                is Resource.Error -> _trailer.value =
+                    TrailerState(error = response.message ?: "", data = emptyList())
+                is Resource.Loading -> _trailer.value =
+                    TrailerState(isLoading = true, data = emptyList())
                 is Resource.Success -> _trailer.value =
                     TrailerState(data = response.data!!.results)
             }
@@ -102,6 +104,7 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
     val selectedMovie get() = _selectedMovie
 
     fun selectedMovie(movie: UpcomingMovies.Movie) {
+        getTrailer(movieId = movie.id)
         _selectedMovie.value = movie
     }
 }
@@ -113,7 +116,7 @@ data class MovieState(
 )
 
 data class TrailerState(
-    var data: List<MovieTrailer.Trailer> = emptyList(),
+    var data: List<MovieTrailer.Trailer>,
     var error: String = "",
     var isLoading: Boolean = false
 )

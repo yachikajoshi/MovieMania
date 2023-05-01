@@ -96,6 +96,8 @@ dependencies {
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.30.0"
     implementation "com.google.accompanist:accompanist-pager:0.30.0"
 
-
+    //Exoplayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.6'
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:chromecast-sender:0.28'
 
 }

@@ -2,6 +2,7 @@ package com.yachikajoshi.movielist.ui.presentation
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
@@ -56,11 +57,15 @@ class MainActivity : ComponentActivity() {
                         } else if (type == "TV_SHOWS") {
                             listOfMovies = viewModel.upcomingMovieList.value.data
                         }
-                        MovieDetailScreen(
-                            selected = selectedMovie,
-                            listOfMovies = listOfMovies,
-                            onBackPressed = { navController.navigateUp() }
-                        )
+                        val trailer = viewModel.trailer.value
+                        if (trailer.data.isNotEmpty()) {
+                            MovieDetailScreen(
+                                trailerKey = trailer.data[0].key,
+                                selected = selectedMovie,
+                                listOfMovies = listOfMovies,
+                                onBackPressed = { navController.navigateUp() }
+                            )
+                        }
                     }
                 }
             }
