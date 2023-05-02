@@ -71,7 +71,7 @@ fun MainContent(
                 .verticalScroll(rememberScrollState())
         ) {
             LatestMovies(modelStateOfTopMovies)
-            Spacer(modifier = Modifier.height(20.dp))
+//            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "Top Movies",
                 modifier = Modifier
