@@ -1,6 +1,7 @@
 package com.yachikajoshi.movielist.ui.presentation
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -42,7 +43,7 @@ fun MovieDetailScreen(
     selected: UpcomingMovies.Movie,
     listOfMovies: List<UpcomingMovies.Movie>,
     onBackPressed: () -> Unit,
-    trailerKey: String
+    viewModel: MoviesViewModel
 ) {
 
     var selectedMovie by remember { mutableStateOf(selected) }
@@ -68,6 +69,7 @@ fun MovieDetailScreen(
     Scaffold() {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(it)
                 .background(
@@ -75,7 +77,7 @@ fun MovieDetailScreen(
                 )
         ) {
             MovieHeader(
-                trailerKey = trailerKey,
+                viewModel = viewModel,
                 movie = selectedMovie,
                 isBookmarked = isBookmarked,
                 onBookmarkChanged = {
@@ -83,7 +85,9 @@ fun MovieDetailScreen(
                         bookmarks.remove(selectedMovie)
                     else bookmarks.add(selectedMovie)
                 },
-                onBackPressed = { onBackPressed() })
+                onBackPressed = {
+                    onBackPressed()
+                })
             Divider()
             Spacer(modifier = Modifier.height(16.dp))
             MovieDescription(
@@ -159,7 +163,7 @@ fun PlaySection(
 
 @Composable
 fun MovieHeader(
-    trailerKey: String,
+    viewModel: MoviesViewModel,
     modifier: Modifier = Modifier,
     movie: UpcomingMovies.Movie,
     isBookmarked: Boolean,
@@ -168,17 +172,11 @@ fun MovieHeader(
 ) {
     Box(
         Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
     ) {
 
 
-        ExoPlayerView(videoId = trailerKey)
-//        AsyncImage(
-//            model = IMAGE_URL + movie.poster_path,
-//            contentDescription = null,
-//            modifier = modifier
-//                .fillMaxSize(), contentScale = ContentScale.FillWidth
-//        )
+        ExoPlayerView(viewModel = viewModel)
         TopAppBar(
             elevation = 0.dp,
             modifier = modifier,
@@ -304,33 +302,33 @@ fun MovieItem(
 }
 
 @Composable
-fun ExoPlayerView(videoId: String) {
-    Log.d("ididid", "ExoPlayerView: $videoId")
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val youTubePlayerView = remember {
-        YouTubePlayerView(context).apply {
-            addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                override fun onReady(youTubePlayer: YouTubePlayer) {
-                    super.onReady(youTubePlayer)
-                    youTubePlayer.loadVideo(videoId, 0f)
-                }
-            })
+fun ExoPlayerView(viewModel: MoviesViewModel) {
+    val trailerState by viewModel.trailer.collectAsState()
+    if (trailerState.data.isNotEmpty()) {
+        val context = LocalContext.current
+        val lifecycleOwner = LocalLifecycleOwner.current
+        val youTubePlayerView = remember {
+            YouTubePlayerView(context).apply {
+                addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                    override fun onReady(youTubePlayer: YouTubePlayer) {
+                        super.onReady(youTubePlayer)
+                        youTubePlayer.loadVideo(trailerState.data[trailerState.data.size-1].key, 0f)
+                    }
+                })
+
+            }
         }
+        AndroidView(
+            modifier = Modifier.fillMaxWidth(),
+            factory = { youTubePlayerView }
+        )
+
+        DisposableEffect(key1 = youTubePlayerView, effect = {
+            lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
+            }
+        })
     }
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { youTubePlayerView }
-    )
-
-    DisposableEffect(key1 = youTubePlayerView, effect = {
-        lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
-        }
-    })
 }
-
-
-
 

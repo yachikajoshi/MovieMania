@@ -8,8 +8,11 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.core.view.WindowCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,19 +24,23 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel by viewModels<MoviesViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
 
             MovieListTheme {
                 val navController = rememberNavController()
-                val viewModel = hiltViewModel<MoviesViewModel>()
+
                 NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
                     composable(route = Screen.Dashboard.route) {
-                        Dashboard(navController, viewModel.movieState.value,
-                            viewModel.upcomingMovieList.value,
+                        Dashboard(navController, viewModel.movieState,
+                            viewModel.upcomingMovieList,
                             onMovieClicked = { selectedMovie, type ->
                                 viewModel.selectedMovie(movie = selectedMovie)
+                                viewModel.getTrailer(movieId = selectedMovie.id)
                                 navController.navigate(Screen.MovieDetail.route + "/" + type)
                             })
                     }
@@ -49,23 +56,22 @@ class MainActivity : ComponentActivity() {
                             type = NavType.StringType
                         })
                     ) { entry ->
-                        val selectedMovie = viewModel.selectedMovie.value
                         val type = entry.arguments!!.getString("movie_type") ?: ""
                         var listOfMovies: List<UpcomingMovies.Movie> = listOf()
                         if (type == "TOP_MOVIES") {
-                            listOfMovies = viewModel.movieState.value.data
+                            listOfMovies = viewModel.movieState.data
                         } else if (type == "TV_SHOWS") {
-                            listOfMovies = viewModel.upcomingMovieList.value.data
+                            listOfMovies = viewModel.upcomingMovieList.data
                         }
-                        val trailer = viewModel.trailer.value
-                        if (trailer.data.isNotEmpty()) {
-                            MovieDetailScreen(
-                                trailerKey = trailer.data[0].key,
-                                selected = selectedMovie,
-                                listOfMovies = listOfMovies,
-                                onBackPressed = { navController.navigateUp() }
-                            )
-                        }
+                        val selectedMovie = viewModel.selectedMovie
+                        MovieDetailScreen(
+                            viewModel = viewModel,
+                            selected = selectedMovie,
+                            listOfMovies = listOfMovies,
+                            onBackPressed = {
+                                navController.navigateUp()
+                            }
+                        )
                     }
                 }
             }
@@ -91,3 +97,30 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+//@Composable
+//fun MyNavHost(navController:NavController) {
+//    val viewModel = hiltViewModel<MoviesViewModel>()
+//    NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
+//        composable(route = Screen.Dashboard.route) {
+//            Dashboard(navController,
+//                onMovieClicked = { selectedMovie, type ->
+//                    viewModel.selectedMovie(movie = selectedMovie)
+//                })
+//        }
+//        composable(
+//            route = Screen.MovieDetail.route,
+//        ) {
+//            val selectedMovie = viewModel.selectedMovie.value
+//            LaunchedEffect(selectedMovie.id) {
+//                viewModel.selectedMovie(movie = selectedMovie)
+//                viewModel.getTrailer(movieId = selectedMovie.id)
+//            }
+//            val trailer = viewModel.trailer.value
+//            if (trailer.data.isNotEmpty()) {
+//                MovieDetailScreen(
+//                    trailerKey = trailer.data[0].key,
+//                    selected = selectedMovie
+//                )
+//            }
+//        }}
+//}
