@@ -1,39 +1,39 @@
 package com.yachikajoshi.movielist.ui.presentation
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
-import com.yachikajoshi.movielist.ui.theme.Purple200
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.yield
+import com.yachikajoshi.movielist.ui.theme.Background
+import com.yachikajoshi.movielist.ui.theme.ChipColor
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LatestMovies(movieState: MovieState) {
     val pagerState = rememberPagerState(initialPage = 0)
+    val density = LocalDensity.current.density
+    val width = remember { mutableStateOf(0f) }
+    val height = remember { mutableStateOf(0f) }
 //    LaunchedEffect(Unit) {
 //        while (true) {
 //            yield()
