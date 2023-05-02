@@ -1,7 +1,5 @@
 package com.yachikajoshi.movielist.ui.presentation
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,7 +20,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,8 +30,10 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
+import com.yachikajoshi.movielist.common.getGenreNames
 import com.yachikajoshi.movielist.data.model.UpcomingMovies
 import com.yachikajoshi.movielist.ui.theme.Background
+import com.yachikajoshi.movielist.ui.theme.TextColor
 import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
 
 
@@ -102,6 +101,7 @@ fun MovieDetailScreen(
                 items(moviesList) { movie ->
                     MovieItem(movie = movie) {
                         selectedMovie = it
+                        viewModel.getTrailer(selectedMovie.id)
                     }
                 }
             }
@@ -174,8 +174,6 @@ fun MovieHeader(
         Modifier
             .fillMaxSize()
     ) {
-
-
         ExoPlayerView(viewModel = viewModel)
         TopAppBar(
             elevation = 0.dp,
@@ -226,37 +224,36 @@ fun MovieDescription(
     modifier: Modifier = Modifier,
     movie: UpcomingMovies.Movie
 ) {
-    val spannedTextGenres = buildAnnotatedString {
+    val spannedTextGenre = buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                color = ViewAllTextColor,
+                color = ViewAllTextColor
             )
         ) {
-            append("Genres : ")
+            append("Genre : ")
         }
         withStyle(
             style = SpanStyle(
-                color = Color(0XFFFFFFFF),
+                color = TextColor,
             )
         ) {
-//            append(movie.genre_ids.forEach {  })
+            append(movie.genre_ids.getGenreNames())
         }
     }
-    val spannedTextCrew = buildAnnotatedString {
+    val spannedTextLanguage = buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                color = ViewAllTextColor,
-                fontWeight = FontWeight.Bold
+                color = ViewAllTextColor
             )
         ) {
-            append("Crew : ")
+            append("Original Language : ")
         }
         withStyle(
             style = SpanStyle(
-                color = Color(0XFFFFFFFF),
+                color = TextColor,
             )
         ) {
-//            append(movie.crew)
+            append(movie.original_language)
         }
     }
     Column(
@@ -266,15 +263,26 @@ fun MovieDescription(
     ) {
         Text(
             color = Color.White,
-            text = movie.original_title,
+            text = movie.title,
             style = MaterialTheme.typography.h5
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = movie.overview,
+            style = MaterialTheme.typography.body2,
+            color = TextColor
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = spannedTextCrew,
+            text = spannedTextLanguage,
             style = MaterialTheme.typography.body2
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = spannedTextGenre,
+            style = MaterialTheme.typography.body2
+        )
+        Spacer(modifier = Modifier.height(20.dp))
         Text(
             color = Color(0XFFFFFFFF),
             text = "Suggested Movies",
@@ -312,17 +320,18 @@ fun ExoPlayerView(viewModel: MoviesViewModel) {
                 addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
                     override fun onReady(youTubePlayer: YouTubePlayer) {
                         super.onReady(youTubePlayer)
-                        youTubePlayer.loadVideo(trailerState.data[trailerState.data.size-1].key, 0f)
+                        youTubePlayer.loadVideo(
+                            trailerState.data[trailerState.data.size - 1].key,
+                            0f
+                        )
                     }
                 })
-
             }
         }
         AndroidView(
             modifier = Modifier.fillMaxWidth(),
             factory = { youTubePlayerView }
         )
-
         DisposableEffect(key1 = youTubePlayerView, effect = {
             lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
             onDispose {

@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
+import com.yachikajoshi.movielist.common.Constants.GENRES
 
 fun Modifier.shimmerEffect(): Modifier = composed {
     var size by remember {
@@ -36,4 +37,10 @@ fun Modifier.shimmerEffect(): Modifier = composed {
             end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat())
         )
     ).onGloballyPositioned { size = it.size }
+}
+
+fun List<Int>.getGenreNames(): String {
+    var genresString = mutableListOf<String>()
+    this.forEach { genresString.add(GENRES[it].toString()) }
+    return genresString.toString().removePrefix("[").removeSuffix("]")
 }
