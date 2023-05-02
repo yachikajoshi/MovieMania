@@ -9,9 +9,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -23,6 +25,7 @@ import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.shimmerEffect
 import com.yachikajoshi.movielist.data.model.UpcomingMovies
 import com.yachikajoshi.movielist.ui.theme.BottomAppBarColor
+import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
 
 @Composable
 fun Dashboard(
@@ -37,16 +40,16 @@ fun Dashboard(
 
     Scaffold(
         backgroundColor = Color(0xff21212a),
-        topBar = { TopAppBar(modelStateOfTopMovies) },
+//        topBar = { TopAppBar(modelStateOfTopMovies) },
         bottomBar = { BottomNavigation(navController) },
         content = {
             //Main content
-               MainContent(
-                   paddingValues = it,
-                   modelStateOfTopMovies = modelStateOfTopMovies,
-                   modelStateOfTvShows = modelStateOfTvShows,
-                   onMovieClicked = onMovieClicked
-               )
+            MainContent(
+                paddingValues = it,
+                modelStateOfTopMovies = modelStateOfTopMovies,
+                modelStateOfTvShows = modelStateOfTvShows,
+                onMovieClicked = onMovieClicked
+            )
         }
     )
 }
@@ -61,92 +64,87 @@ fun MainContent(
         type: MovieType
     ) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .padding(paddingValues)
-            .verticalScroll(rememberScrollState())
-    ) {
-        LatestMovies(modelStateOfTopMovies)
-        Text(
-            text = "Top Movies",
-            modifier = Modifier
-                .padding(start = 10.dp, top = 10.dp),
-            style = TextStyle(
-                fontSize = 16.sp,
-                fontStyle = FontStyle(R.font.poppins_semi_bold),
-                color = Color(0XFFFFFFFF)
-            )
-        )
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(
-                horizontal = 10.dp, vertical = 10.dp
-            ),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            if (modelStateOfTopMovies.isLoading) {
-                items(5) { int ->
-                    Box(
-                        modifier = Modifier
-                            .height(180.dp)
-                            .width(132.dp)
-                            .clip(RoundedCornerShape(5))
-                            .shimmerEffect()
-                    )
-                }
-            } else {
-                itemsIndexed(modelStateOfTopMovies.data) { index, movie ->
-                    MovieItems(
-                        movie = movie,
-                        Modifier.clickable { onMovieClicked(movie, MovieType.TOP_MOVIES) })
-                }
-            }
-
-        }
-        Text(
-            text = "Top TV Shows",
-            modifier = Modifier
-                .padding(start = 10.dp, top = 10.dp),
-            style = TextStyle(
-                fontSize = 16.sp,
-                fontStyle = FontStyle(R.font.poppins_semi_bold),
-                color = Color.White
-            )
-        )
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            if (modelStateOfTopMovies.isLoading) {
-                items(5) { int ->
-                    Box(
-                        modifier = Modifier
-                            .height(180.dp)
-                            .width(132.dp)
-                            .clip(RoundedCornerShape(5))
-                            .shimmerEffect()
-                    )
-                }
-            } else {
-                itemsIndexed(modelStateOfTvShows.data) { index, movie ->
-                    MovieItems(
-                        movie = movie,
-                        Modifier.clickable { onMovieClicked(movie, MovieType.TV_SHOWS) })
-                }
-            }
-        }
-
-    }
-}
-
-//@Preview
-@Composable
-fun TopAppBar(modelStateOfTopMovies: MovieState) {
     Box() {
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+        ) {
+            LatestMovies(modelStateOfTopMovies)
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Top Movies",
+                modifier = Modifier
+                    .padding(horizontal = 10.dp),
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontStyle = FontStyle(R.font.poppins_semi_bold),
+                    color = ViewAllTextColor
+                )
+            )
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(
+                    horizontal = 10.dp, vertical = 10.dp
+                ),
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                if (modelStateOfTopMovies.isLoading) {
+                    items(5) { int ->
+                        Box(
+                            modifier = Modifier
+                                .height(180.dp)
+                                .width(132.dp)
+                                .clip(RoundedCornerShape(5))
+                                .shimmerEffect()
+                        )
+                    }
+                } else {
+                    itemsIndexed(modelStateOfTopMovies.data) { index, movie ->
+                        MovieItems(
+                            movie = movie,
+                            Modifier.clickable { onMovieClicked(movie, MovieType.TOP_MOVIES) })
+                    }
+                }
 
+            }
+            Text(
+                text = "Top TV Shows",
+                modifier = Modifier
+                    .padding(start = 10.dp, top = 10.dp),
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontStyle = FontStyle(R.font.poppins_semi_bold),
+                    color = ViewAllTextColor
+                )
+            )
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                if (modelStateOfTopMovies.isLoading) {
+                    items(5) { int ->
+                        Box(
+                            modifier = Modifier
+                                .height(180.dp)
+                                .width(132.dp)
+                                .clip(RoundedCornerShape(5))
+                                .shimmerEffect()
+                        )
+                    }
+                } else {
+                    itemsIndexed(modelStateOfTvShows.data) { index, movie ->
+                        MovieItems(
+                            movie = movie,
+                            Modifier.clickable { onMovieClicked(movie, MovieType.TV_SHOWS) })
+                    }
+                }
+            }
+
+        }
         TopAppBar(backgroundColor = Color.Transparent,
             title = {},
             elevation = 0.dp,
@@ -176,6 +174,7 @@ fun TopAppBar(modelStateOfTopMovies: MovieState) {
                 }
             })
     }
+
 }
 
 @Composable
