@@ -44,3 +44,29 @@ fun List<Int>.getGenreNames(): String {
     this.forEach { genresString.add(GENRES[it].toString()) }
     return genresString.toString().removePrefix("[").removeSuffix("]")
 }
+
+fun String.getLanguageName(): String {
+    val lang = when (this) {
+        "en" -> "English"
+        "ja" -> "Japanese"
+        "hi" -> "Hindi"
+        "fr" -> "French"
+        "in" -> "Indonesian"
+        "it" -> "Italian"
+        "ko" -> "Korean"
+        "la" -> "Latin"
+        "pa" -> "Punjabi"
+        "pt" -> "Portuguese"
+        "ru" -> "Russian"
+        "sv" -> "swedish"
+        "ta" -> "Tamil"
+        "te" -> "Telugu"
+        "ml" -> "Malayalam"
+        "vi" -> "Vietnamese"
+        "zh" -> "Chinese"
+        else -> {
+            this
+        }
+    }
+    return lang
+}

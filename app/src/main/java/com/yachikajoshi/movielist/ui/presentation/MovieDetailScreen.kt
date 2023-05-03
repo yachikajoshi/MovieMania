@@ -31,6 +31,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
 import com.yachikajoshi.movielist.common.getGenreNames
+import com.yachikajoshi.movielist.common.getLanguageName
 import com.yachikajoshi.movielist.data.model.UpcomingMovies
 import com.yachikajoshi.movielist.ui.theme.Background
 import com.yachikajoshi.movielist.ui.theme.TextColor
@@ -253,7 +254,7 @@ fun MovieDescription(
                 color = TextColor,
             )
         ) {
-            append(movie.original_language)
+            append(movie.original_language.getLanguageName())
         }
     }
     Column(
