@@ -3,6 +3,7 @@ package com.yachikajoshi.movielist.ui.presentation
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
@@ -76,7 +77,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-//        hideSystemUI()
+        hideSystemUI()
     }
 
     fun hideSystemUI() {
@@ -84,43 +85,15 @@ class MainActivity : ComponentActivity() {
         actionBar?.hide()
 
         //Hide the status bars
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        } else {
-            window.insetsController?.apply {
-                hide(WindowInsets.Type.statusBars())
-                systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        }
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+//            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+//        } else {
+//            window.insetsController?.apply {
+//                hide(WindowInsets.Type.statusBars())
+//                systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+//            }
+//        }
     }
 }
-
-//@Composable
-//fun MyNavHost(navController:NavController) {
-//    val viewModel = hiltViewModel<MoviesViewModel>()
-//    NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
-//        composable(route = Screen.Dashboard.route) {
-//            Dashboard(navController,
-//                onMovieClicked = { selectedMovie, type ->
-//                    viewModel.selectedMovie(movie = selectedMovie)
-//                })
-//        }
-//        composable(
-//            route = Screen.MovieDetail.route,
-//        ) {
-//            val selectedMovie = viewModel.selectedMovie.value
-//            LaunchedEffect(selectedMovie.id) {
-//                viewModel.selectedMovie(movie = selectedMovie)
-//                viewModel.getTrailer(movieId = selectedMovie.id)
-//            }
-//            val trailer = viewModel.trailer.value
-//            if (trailer.data.isNotEmpty()) {
-//                MovieDetailScreen(
-//                    trailerKey = trailer.data[0].key,
-//                    selected = selectedMovie
-//                )
-//            }
-//        }}
-//}
