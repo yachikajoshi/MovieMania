@@ -1,11 +1,13 @@
 package com.yachikajoshi.movielist.ui.presentation
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -71,17 +72,31 @@ fun MainContent(
                 .verticalScroll(rememberScrollState())
         ) {
             LatestMovies(modelStateOfTopMovies)
-//            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = "Top Movies",
-                modifier = Modifier
-                    .padding(horizontal = 10.dp),
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontStyle = FontStyle(R.font.poppins_semi_bold),
-                    color = ViewAllTextColor
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Top Rated Movies",
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp),
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontStyle = FontStyle(R.font.poppins_semi_bold),
+                        color = Color.White
+                    )
                 )
-            )
+                Text(
+                    text = "See more",
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontStyle = FontStyle(R.font.poppins_medium),
+                        color = ViewAllTextColor
+                    )
+                )
+            }
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -109,16 +124,32 @@ fun MainContent(
                 }
 
             }
-            Text(
-                text = "Top TV Shows",
-                modifier = Modifier
-                    .padding(start = 10.dp, top = 10.dp),
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontStyle = FontStyle(R.font.poppins_semi_bold),
-                    color = ViewAllTextColor
+            Spacer(modifier = Modifier.padding(10.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Top TV Shows",
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp),
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontStyle = FontStyle(R.font.poppins_semi_bold),
+                        color = Color.White
+                    )
                 )
-            )
+                Text(
+                    text = "See more",
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp),
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontStyle = FontStyle(R.font.poppins_semi_bold),
+                        color = ViewAllTextColor
+                    )
+                )
+            }
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth(),
