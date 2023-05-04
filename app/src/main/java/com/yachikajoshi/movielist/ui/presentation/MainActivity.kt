@@ -33,10 +33,10 @@ class MainActivity : ComponentActivity() {
                             modelStateOfTrendingMovies = viewModel.trendingMovieState,
                             modelStateOfTopMovies = viewModel.topRatedMovieState,
                             modelStateOfTvShows = viewModel.upcomingMovieList,
-                            onMovieClicked = { selectedMovie, type ->
+                            onMovieClicked = { selectedMovie->
                                 viewModel.selectedMovie(movie = selectedMovie)
                                 viewModel.getTrailer(movieId = selectedMovie.id)
-                                navController.navigate(Screen.MovieDetail.route + "/" + type)
+                                navController.navigate(Screen.MovieDetail.route)
                             })
                     }
                     composable(route = Screen.Search.route) {
@@ -45,24 +45,12 @@ class MainActivity : ComponentActivity() {
                         })
                     }
                     composable(
-                        route = Screen.MovieDetail.route + "/{movie_type}",
-                        arguments = listOf(navArgument("movie_type")
-                        {
-                            type = NavType.StringType
-                        })
+                        route = Screen.MovieDetail.route,
                     ) { entry ->
-                        val type = entry.arguments!!.getString("movie_type") ?: ""
-                        var listOfMovies: List<MovieResponse.Movie> = listOf()
-                        if (type == "TOP_MOVIES") {
-                            listOfMovies = viewModel.topRatedMovieState.data
-                        } else if (type == "TV_SHOWS") {
-                            listOfMovies = viewModel.upcomingMovieList.data
-                        }
                         val selectedMovie = viewModel.selectedMovie
                         MovieDetailScreen(
                             viewModel = viewModel,
                             selected = selectedMovie,
-                            listOfMovies = listOfMovies,
                             onBackPressed = {
                                 navController.navigateUp()
                             }

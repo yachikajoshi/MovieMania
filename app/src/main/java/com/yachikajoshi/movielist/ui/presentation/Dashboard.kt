@@ -34,9 +34,7 @@ fun Dashboard(
     modelStateOfTopMovies: MovieState,
     modelStateOfTvShows: MovieState,
     onMovieClicked: (
-        movie: MovieResponse.Movie,
-        type: MovieType
-    ) -> Unit
+        movie: MovieResponse.Movie) -> Unit
 ) {
 
     Scaffold(
@@ -63,9 +61,7 @@ fun MainContent(
     modelStateOfTrendingMovies: MovieState,
     modelStateOfTvShows: MovieState,
     onMovieClicked: (
-        movie: MovieResponse.Movie,
-        type: MovieType
-    ) -> Unit
+        movie: MovieResponse.Movie) -> Unit
 ) {
     Box() {
         Column(
@@ -114,7 +110,7 @@ fun MainContent(
 @Composable
 fun TopRatedMovies(
     modelStateOfTopMovies: MovieState,
-    onMovieClicked: (movie: MovieResponse.Movie, type: MovieType) -> Unit
+    onMovieClicked: (movie: MovieResponse.Movie) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -161,14 +157,14 @@ fun TopRatedMovies(
             itemsIndexed(modelStateOfTopMovies.data) { index, movie ->
                 MovieItems(
                     movie = movie,
-                    Modifier.clickable { onMovieClicked(movie, MovieType.TV_SHOWS) })
+                    Modifier.clickable { onMovieClicked(movie) })
             }
         }
     }
 }
 
 @Composable
-fun TrendingMovies(modelStateOfTrendingMovies: MovieState, onMovieClicked: (movie: MovieResponse.Movie, type: MovieType) -> Unit) {
+fun TrendingMovies(modelStateOfTrendingMovies: MovieState, onMovieClicked: (movie: MovieResponse.Movie) -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -217,7 +213,7 @@ fun TrendingMovies(modelStateOfTrendingMovies: MovieState, onMovieClicked: (movi
             itemsIndexed(modelStateOfTrendingMovies.data) { index, movie ->
                 MovieItems(
                     movie = movie,
-                    Modifier.clickable { onMovieClicked(movie, MovieType.TOP_MOVIES) })
+                    Modifier.clickable { onMovieClicked(movie) })
             }
         }
 

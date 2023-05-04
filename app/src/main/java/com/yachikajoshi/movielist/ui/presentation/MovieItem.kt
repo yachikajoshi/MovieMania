@@ -7,7 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -21,6 +20,9 @@ import com.yachikajoshi.movielist.ui.theme.TextColor
 
 @Composable
 fun MovieItems(movie: MovieResponse.Movie, modifier: Modifier = Modifier) {
+//    var isLoading by remember {
+//        mutableStateOf(true)
+//    }
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(Constants.IMAGE_URL + movie.poster_path)
@@ -29,16 +31,16 @@ fun MovieItems(movie: MovieResponse.Movie, modifier: Modifier = Modifier) {
         placeholder = painterResource(R.drawable.outline_share_24),
         contentDescription = "dec",
         contentScale = ContentScale.Crop,
+//        onSuccess = { isLoading = false },
         modifier = modifier
             .height(180.dp)
             .width(132.dp)
             .clip(RoundedCornerShape(5))
             .border(width = 1.dp, color = TextColor, shape = RoundedCornerShape(5))
     )
-}
-
-enum class MovieType {
-    TOP_MOVIES, TV_SHOWS, UPCOMING_MOVIES
+//    AnimatedVisibility(visible = isLoading, enter = fadeIn(), exit = fadeOut()) {
+//        CircularProgressIndicator()
+//    }
 }
 
 

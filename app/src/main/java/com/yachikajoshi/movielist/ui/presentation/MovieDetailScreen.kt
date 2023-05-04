@@ -43,7 +43,6 @@ import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
 @Composable
 fun MovieDetailScreen(
     selected: MovieResponse.Movie,
-    listOfMovies: List<MovieResponse.Movie>,
     onBackPressed: () -> Unit,
     viewModel: MoviesViewModel
 ) {
@@ -55,12 +54,6 @@ fun MovieDetailScreen(
     val isBookmarked by remember {
         derivedStateOf {
             bookmarks.contains(selectedMovie)
-        }
-    }
-
-    val moviesList by remember {
-        derivedStateOf {
-            listOfMovies.filter { it != selectedMovie }
         }
     }
 
@@ -100,12 +93,6 @@ fun MovieDetailScreen(
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                items(moviesList) { movie ->
-                    MovieItem(movie = movie) {
-                        selectedMovie = it
-                        viewModel.getTrailer(selectedMovie.id)
-                    }
-                }
             }
         }
     }
@@ -300,24 +287,6 @@ fun MovieDescription(
             style = MaterialTheme.typography.subtitle1
         )
     }
-}
-
-@Composable
-fun MovieItem(
-    modifier: Modifier = Modifier,
-    movie: MovieResponse.Movie,
-    onClicked: (MovieResponse.Movie) -> Unit
-) {
-    AsyncImage(
-        model = IMAGE_URL + movie.poster_path,
-        contentDescription = null,
-        modifier = modifier
-            .height(180.dp)
-            .width(132.dp)
-            .clip(RoundedCornerShape(5))
-            .clickable { onClicked(movie) },
-        contentScale = ContentScale.Crop
-    )
 }
 
 @Composable
