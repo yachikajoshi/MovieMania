@@ -1,5 +1,6 @@
 package com.yachikajoshi.movielist.ui.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -295,7 +296,7 @@ fun MovieDescription(
 @Composable
 fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
     val trailerState by viewModel.trailer.collectAsState()
-    if (trailerState.data.success || trailerState.data.results.isNotEmpty()) {
+    if (trailerState.data.results.isNotEmpty()) {
         val context = LocalContext.current
         val lifecycleOwner = LocalLifecycleOwner.current
         val youTubePlayerView = remember {
@@ -303,10 +304,12 @@ fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
                 addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
                     override fun onReady(youTubePlayer: YouTubePlayer) {
                         super.onReady(youTubePlayer)
-                        youTubePlayer.loadVideo(
-                            trailerState.data.results[trailerState.data.results.size - 1].key,
-                            0f
-                        )
+                        if (trailerState.data.results.isNotEmpty()) {
+                            youTubePlayer.loadVideo(
+                                trailerState.data.results[trailerState.data.results.size - 1].key,
+                                0f
+                            )
+                        }
                     }
                 })
             }
@@ -324,7 +327,7 @@ fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
     } else {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(Constants.IMAGE_URL + posterPath)
+                .data(IMAGE_URL + posterPath)
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.outline_share_24),
