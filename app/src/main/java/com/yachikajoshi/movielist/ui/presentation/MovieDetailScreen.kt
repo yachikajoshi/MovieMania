@@ -95,7 +95,10 @@ fun MovieDetailScreen(
             ) {
                 items(viewModel.suggestedMovieState.value.data) { movie ->
                     MovieItems(movie = movie,
-                        Modifier.clickable { onMovieClicked(movie.id) })
+                        Modifier.clickable {
+                            selectedMovie = movie
+                            viewModel.getTrailer(movieId = movie.id)
+                        })
                 }
             }
         }
@@ -299,27 +302,42 @@ fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
     if (trailerState.data.results.isNotEmpty()) {
         val context = LocalContext.current
         val lifecycleOwner = LocalLifecycleOwner.current
+        val youTubePlayerListener = remember {
+            object : AbstractYouTubePlayerListener() {
+                var youTubePlayer: YouTubePlayer? = null
+                    private set
+
+                override fun onReady(youTubePlayer: YouTubePlayer) {
+                    super.onReady(youTubePlayer)
+                    this.youTubePlayer = youTubePlayer
+                    if (trailerState.data.results.isNotEmpty()) {
+                        youTubePlayer.loadVideo(
+                            trailerState.data.results[trailerState.data.results.size - 1].key,
+                            0f
+                        )
+                    }
+                }
+            }
+        }
         val youTubePlayerView = remember {
             YouTubePlayerView(context).apply {
-                addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                        super.onReady(youTubePlayer)
-                        if (trailerState.data.results.isNotEmpty()) {
-                            youTubePlayer.loadVideo(
-                                trailerState.data.results[trailerState.data.results.size - 1].key,
-                                0f
-                            )
-                        }
-                    }
-                })
+                addYouTubePlayerListener(youTubePlayerListener)
             }
         }
         AndroidView(
             modifier = Modifier.fillMaxWidth(),
-            factory = { youTubePlayerView }
+            factory = {
+                youTubePlayerView
+            }
         )
-        DisposableEffect(key1 = youTubePlayerView, effect = {
+        DisposableEffect(key1 = youTubePlayerView, key2 = trailerState, effect = {
             lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
+            if (trailerState.data.results.isNotEmpty()) {
+                youTubePlayerListener.youTubePlayer?.loadVideo(
+                    trailerState.data.results[trailerState.data.results.size - 1].key,
+                    0f
+                )
+            }
             onDispose {
                 lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
             }

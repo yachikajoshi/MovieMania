@@ -55,7 +55,9 @@ class MainActivity : ComponentActivity() {
                                 navController.navigateUp()
                             },
                             onMovieClicked = { id ->
-                                viewModel.getSuggestedMovies(id)
+//                                viewModel.selectedMovie(movie = selectedMovie)
+//                                viewModel.getTrailer(movieId = id)
+//                                viewModel.getSuggestedMovies(id)
                             }
                         )
                     }
