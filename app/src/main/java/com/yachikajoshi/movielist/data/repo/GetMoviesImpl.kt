@@ -27,4 +27,7 @@ class GetMoviesImpl(private val movieAPIService: MovieAPIService) : MoviesReposi
     override suspend fun getTrendingMovies(): MovieResponse =
         movieAPIService.getTrending(apiKey = API_KEY)
 
+    override suspend fun getSuggestedMovies(movieId: String): MovieResponse =
+        movieAPIService.getSuggestedMovies(movieId = movieId, apiKey = API_KEY)
+
 }

@@ -44,13 +44,12 @@ import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
 fun MovieDetailScreen(
     selected: MovieResponse.Movie,
     onBackPressed: () -> Unit,
-    viewModel: MoviesViewModel
+    viewModel: MoviesViewModel, onMovieClicked: (movieId: String) -> Unit
 ) {
 
     var selectedMovie by remember { mutableStateOf(selected) }
     val bookmarks = remember { mutableStateListOf<MovieResponse.Movie>() }
     val scrollState = rememberScrollState()
-
     val isBookmarked by remember {
         derivedStateOf {
             bookmarks.contains(selectedMovie)
@@ -93,6 +92,10 @@ fun MovieDetailScreen(
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
+                items(viewModel.suggestedMovieState.value.data) { movie ->
+                    MovieItems(movie = movie,
+                        Modifier.clickable { onMovieClicked(movie.id) })
+                }
             }
         }
     }

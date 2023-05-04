@@ -35,6 +35,15 @@ class MovieListUseCase @Inject constructor(private val movieRepository: MoviesRe
         return Resource.Success(response)
     }
 
+    suspend fun getSuggestedMovies(movieId: String): Resource<MovieResponse> {
+        val response = try {
+            movieRepository.getSuggestedMovies(movieId)
+        } catch (e: Exception) {
+            return Resource.Error("An unknown exception occurred: ${e.message}")
+        }
+        return Resource.Success(response)
+    }
+
     suspend fun getTrendingMovies(): Resource<MovieResponse> {
         val response = try {
             movieRepository.getTrendingMovies()

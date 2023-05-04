@@ -31,6 +31,9 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
     private var _trailer = MutableStateFlow(TrailerState(MovieTrailer()))
     val trailer = _trailer.asStateFlow()
 
+    private var _suggestedMovieState = MutableStateFlow(MovieState())
+    val suggestedMovieState = _suggestedMovieState.asStateFlow()
+
     init {
         getTop10MovieList()
         getUpcomingMovieList()
@@ -98,6 +101,17 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
                 is Resource.Loading -> TrailerState(isLoading = true, data = MovieTrailer())
                 is Resource.Success -> TrailerState(data = response.data!!)
             }
+        }
+    }
+
+    fun getSuggestedMovies(movieId: String) {
+        viewModelScope.launch {
+            _suggestedMovieState.value =
+                when (val response = movieListUseCase.getSuggestedMovies(movieId = movieId)) {
+                    is Resource.Error -> MovieState(error = response.message ?: "")
+                    is Resource.Loading -> MovieState(isLoading = true)
+                    is Resource.Success -> MovieState(data = response.data!!.results.take(15))
+                }
         }
     }
 

@@ -33,9 +33,10 @@ class MainActivity : ComponentActivity() {
                             modelStateOfTrendingMovies = viewModel.trendingMovieState,
                             modelStateOfTopMovies = viewModel.topRatedMovieState,
                             modelStateOfTvShows = viewModel.upcomingMovieList,
-                            onMovieClicked = { selectedMovie->
+                            onMovieClicked = { selectedMovie ->
                                 viewModel.selectedMovie(movie = selectedMovie)
                                 viewModel.getTrailer(movieId = selectedMovie.id)
+                                viewModel.getSuggestedMovies(selectedMovie.id)
                                 navController.navigate(Screen.MovieDetail.route)
                             })
                     }
@@ -53,6 +54,9 @@ class MainActivity : ComponentActivity() {
                             selected = selectedMovie,
                             onBackPressed = {
                                 navController.navigateUp()
+                            },
+                            onMovieClicked = { id ->
+                                viewModel.getSuggestedMovies(id)
                             }
                         )
                     }
