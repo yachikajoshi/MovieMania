@@ -32,7 +32,7 @@ import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
 import com.yachikajoshi.movielist.common.getGenreNames
 import com.yachikajoshi.movielist.common.getLanguageName
-import com.yachikajoshi.movielist.data.model.UpcomingMovies
+import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.ui.theme.Background
 import com.yachikajoshi.movielist.ui.theme.TextColor
 import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
@@ -40,14 +40,14 @@ import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
 
 @Composable
 fun MovieDetailScreen(
-    selected: UpcomingMovies.Movie,
-    listOfMovies: List<UpcomingMovies.Movie>,
+    selected: MovieResponse.Movie,
+    listOfMovies: List<MovieResponse.Movie>,
     onBackPressed: () -> Unit,
     viewModel: MoviesViewModel
 ) {
 
     var selectedMovie by remember { mutableStateOf(selected) }
-    val bookmarks = remember { mutableStateListOf<UpcomingMovies.Movie>() }
+    val bookmarks = remember { mutableStateListOf<MovieResponse.Movie>() }
     val scrollState = rememberScrollState()
 
     val isBookmarked by remember {
@@ -166,7 +166,7 @@ fun PlaySection(
 fun MovieHeader(
     viewModel: MoviesViewModel,
     modifier: Modifier = Modifier,
-    movie: UpcomingMovies.Movie,
+    movie: MovieResponse.Movie,
     isBookmarked: Boolean,
     onBookmarkChanged: () -> Unit,
     onBackPressed: () -> Unit
@@ -223,7 +223,7 @@ fun MovieHeader(
 @Composable
 fun MovieDescription(
     modifier: Modifier = Modifier,
-    movie: UpcomingMovies.Movie
+    movie: MovieResponse.Movie
 ) {
     val spannedTextGenre = buildAnnotatedString {
         withStyle(
@@ -295,8 +295,8 @@ fun MovieDescription(
 @Composable
 fun MovieItem(
     modifier: Modifier = Modifier,
-    movie: UpcomingMovies.Movie,
-    onClicked: (UpcomingMovies.Movie) -> Unit
+    movie: MovieResponse.Movie,
+    onClicked: (MovieResponse.Movie) -> Unit
 ) {
     AsyncImage(
         model = IMAGE_URL + movie.poster_path,

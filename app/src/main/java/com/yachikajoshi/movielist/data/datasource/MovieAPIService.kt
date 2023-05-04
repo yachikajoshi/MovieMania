@@ -1,7 +1,7 @@
 package com.yachikajoshi.movielist.data.datasource
 
 import com.yachikajoshi.movielist.data.model.MovieTrailer
-import com.yachikajoshi.movielist.data.model.UpcomingMovies
+import com.yachikajoshi.movielist.data.model.MovieResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -9,13 +9,13 @@ import retrofit2.http.Query
 interface MovieAPIService {
 
     @GET("movie/top_rated")
-    suspend fun getTop10Movies(@Query("api_key") apiKey: String): UpcomingMovies
+    suspend fun getTop10Movies(@Query("api_key") apiKey: String): MovieResponse
 
     @GET("movie/upcoming")
-    suspend fun getComingSoonMovies(@Query("api_key") apiKey: String): UpcomingMovies
+    suspend fun getComingSoonMovies(@Query("api_key") apiKey: String): MovieResponse
 
-    @GET("movie/latest")
-    suspend fun getTopTVShows(@Query("api_key") apiKey: String): UpcomingMovies
+    @GET("trending/all/week")
+    suspend fun getTrending(@Query("api_key") apiKey: String): MovieResponse
 
     @GET("movie/{movieId}/videos")
     suspend fun getTrailer(

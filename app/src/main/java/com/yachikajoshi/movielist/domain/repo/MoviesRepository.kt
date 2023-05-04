@@ -1,7 +1,7 @@
 package com.yachikajoshi.movielist.domain.repo
 
 import com.yachikajoshi.movielist.data.model.MovieTrailer
-import com.yachikajoshi.movielist.data.model.UpcomingMovies
+import com.yachikajoshi.movielist.data.model.MovieResponse
 
 /**
  * We are going to implement this repository
@@ -10,11 +10,11 @@ import com.yachikajoshi.movielist.data.model.UpcomingMovies
 
 interface MoviesRepository {
 
-    suspend fun getTop10Movies(): UpcomingMovies
+    suspend fun getTop10Movies(): MovieResponse
 
-    suspend fun getComingSoonMovies(): UpcomingMovies
+    suspend fun getComingSoonMovies(): MovieResponse
     suspend fun getTrailer(movieId: String): MovieTrailer
 
-//    suspend fun getTopTVShows(): UpcomingMovies
+    suspend fun getTrendingMovies(): MovieResponse
 
 }

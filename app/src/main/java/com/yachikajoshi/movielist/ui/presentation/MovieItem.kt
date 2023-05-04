@@ -14,10 +14,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants
-import com.yachikajoshi.movielist.data.model.UpcomingMovies
+import com.yachikajoshi.movielist.data.model.MovieResponse
 
 @Composable
-fun MovieItems(movie: UpcomingMovies.Movie, modifier: Modifier = Modifier) {
+fun MovieItems(movie: MovieResponse.Movie, modifier: Modifier = Modifier) {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(Constants.IMAGE_URL + movie.poster_path)
