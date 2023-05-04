@@ -29,6 +29,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants
@@ -319,9 +320,15 @@ fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
                 }
             }
         }
+
+        val iFramePlayerOptions = IFramePlayerOptions.Builder()
+            .controls(1)    //0 to disable seekbar
+            .build()
+
         val youTubePlayerView = remember {
             YouTubePlayerView(context).apply {
-                addYouTubePlayerListener(youTubePlayerListener)
+                enableAutomaticInitialization = false
+                initialize(youTubePlayerListener, iFramePlayerOptions)
             }
         }
         AndroidView(
