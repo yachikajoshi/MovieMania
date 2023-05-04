@@ -1,14 +1,13 @@
 package com.yachikajoshi.movielist.ui.presentation
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yachikajoshi.movielist.common.Resource
+import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.data.model.MovieTrailer
-import com.yachikajoshi.movielist.data.model.UpcomingMovies
 import com.yachikajoshi.movielist.domain.use_case.MovieListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,32 +19,29 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieListUseCase) :
     ViewModel() {
 
-    var movieState by mutableStateOf(MovieState())
+    var topRatedMovieState by mutableStateOf(MovieState())
         private set//only viewModel can set the value
 
-
-    private val _tvShows = mutableStateOf(MovieState())
-    val tvShows get() = _tvShows
+    var trendingMovieState by mutableStateOf(MovieState())
+        private set
 
     var upcomingMovieList by mutableStateOf(MovieState())
         private set
 
-    //    var trailer by mutableStateOf(TrailerState())
-//        private set
-    private var _trailer = MutableStateFlow(TrailerState())
+    private var _trailer = MutableStateFlow(TrailerState(MovieTrailer()))
     val trailer = _trailer.asStateFlow()
 
     init {
         getTop10MovieList()
         getUpcomingMovieList()
-//        getTopTVShows()
+        getTrendingMovieList()
     }
 
 
     private fun getTop10MovieList() {
         viewModelScope.launch {
             val response = movieListUseCase.getTop10MoviesList()
-            movieState = when (response) {
+            topRatedMovieState = when (response) {
                 is Resource.Error -> {
                     MovieState(error = response.message ?: "")
                 }
@@ -59,18 +55,34 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
         }
     }
 
-    private fun getUpcomingMovieList() {
+    private fun getTrendingMovieList() {
         viewModelScope.launch {
-            when (val response = movieListUseCase.getUpcomingMoviesList()) {
+            val response = movieListUseCase.getTrendingMovies()
+            trendingMovieState = when (response) {
                 is Resource.Error -> {
-                    upcomingMovieList = MovieState(error = response.message ?: "")
+                    MovieState(error = response.message ?: "")
                 }
                 is Resource.Loading -> {
-                    upcomingMovieList = MovieState(isLoading = true)
+                    MovieState(isLoading = true)
                 }
                 is Resource.Success -> {
-                    upcomingMovieList =
-                        MovieState(data = response.data!!.results.take(15))
+                    MovieState(data = response.data!!.results)
+                }
+            }
+        }
+    }
+
+    private fun getUpcomingMovieList() {
+        viewModelScope.launch {
+            upcomingMovieList = when (val response = movieListUseCase.getUpcomingMoviesList()) {
+                is Resource.Error -> {
+                    MovieState(error = response.message ?: "")
+                }
+                is Resource.Loading -> {
+                    MovieState(isLoading = true)
+                }
+                is Resource.Success -> {
+                    MovieState(data = response.data!!.results.take(15))
                 }
             }
         }
@@ -81,31 +93,31 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
             _trailer.value = when (val response = movieListUseCase.getTrailer(movieId)) {
                 is Resource.Error -> TrailerState(
                     error = response.message ?: "",
-                    data = emptyList()
+                    data = MovieTrailer()
                 )
-                is Resource.Loading -> TrailerState(isLoading = true, data = emptyList())
-                is Resource.Success -> TrailerState(data = response.data!!.results)
+                is Resource.Loading -> TrailerState(isLoading = true, data = MovieTrailer())
+                is Resource.Success -> TrailerState(data = response.data!!)
             }
         }
     }
 
-    var selectedMovie by mutableStateOf(UpcomingMovies.Movie())
+    var selectedMovie by mutableStateOf(MovieResponse.Movie())
         private set
 
-    fun selectedMovie(movie: UpcomingMovies.Movie) {
+    fun selectedMovie(movie: MovieResponse.Movie) {
         selectedMovie = movie
     }
 
 }
 
 data class MovieState(
-    var data: List<UpcomingMovies.Movie> = emptyList(),
+    var data: List<MovieResponse.Movie> = emptyList(),
     var error: String = "",
     var isLoading: Boolean = false
 )
 
 data class TrailerState(
-    var data: List<MovieTrailer.Trailer> = emptyList(),
+    var data: MovieTrailer,
     var error: String = "",
     var isLoading: Boolean = false
 )

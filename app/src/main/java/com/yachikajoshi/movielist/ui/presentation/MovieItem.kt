@@ -1,5 +1,6 @@
 package com.yachikajoshi.movielist.ui.presentation
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,10 +15,14 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants
-import com.yachikajoshi.movielist.data.model.UpcomingMovies
+import com.yachikajoshi.movielist.data.model.MovieResponse
+import com.yachikajoshi.movielist.ui.theme.TextColor
 
 @Composable
-fun MovieItems(movie: UpcomingMovies.Movie, modifier: Modifier = Modifier) {
+fun MovieItems(movie: MovieResponse.Movie, modifier: Modifier = Modifier) {
+//    var isLoading by remember {
+//        mutableStateOf(true)
+//    }
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(Constants.IMAGE_URL + movie.poster_path)
@@ -26,15 +31,16 @@ fun MovieItems(movie: UpcomingMovies.Movie, modifier: Modifier = Modifier) {
         placeholder = painterResource(R.drawable.outline_share_24),
         contentDescription = "dec",
         contentScale = ContentScale.Crop,
+//        onSuccess = { isLoading = false },
         modifier = modifier
             .height(180.dp)
             .width(132.dp)
             .clip(RoundedCornerShape(5))
+            .border(width = 1.dp, color = TextColor, shape = RoundedCornerShape(5))
     )
-}
-
-enum class MovieType {
-    TOP_MOVIES, TV_SHOWS, UPCOMING_MOVIES
+//    AnimatedVisibility(visible = isLoading, enter = fadeIn(), exit = fadeOut()) {
+//        CircularProgressIndicator()
+//    }
 }
 
 

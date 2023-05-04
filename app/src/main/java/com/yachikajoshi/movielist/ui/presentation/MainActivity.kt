@@ -1,25 +1,17 @@
 package com.yachikajoshi.movielist.ui.presentation
 
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.WindowInsets
-import android.view.WindowInsetsController
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.yachikajoshi.movielist.data.model.UpcomingMovies
+import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.ui.theme.MovieListTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,12 +29,14 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
                     composable(route = Screen.Dashboard.route) {
-                        Dashboard(navController, viewModel.movieState,
-                            viewModel.upcomingMovieList,
-                            onMovieClicked = { selectedMovie, type ->
+                        Dashboard(navController = navController,
+                            modelStateOfTrendingMovies = viewModel.trendingMovieState,
+                            modelStateOfTopMovies = viewModel.topRatedMovieState,
+                            modelStateOfTvShows = viewModel.upcomingMovieList,
+                            onMovieClicked = { selectedMovie->
                                 viewModel.selectedMovie(movie = selectedMovie)
                                 viewModel.getTrailer(movieId = selectedMovie.id)
-                                navController.navigate(Screen.MovieDetail.route + "/" + type)
+                                navController.navigate(Screen.MovieDetail.route)
                             })
                     }
                     composable(route = Screen.Search.route) {
@@ -51,24 +45,12 @@ class MainActivity : ComponentActivity() {
                         })
                     }
                     composable(
-                        route = Screen.MovieDetail.route + "/{movie_type}",
-                        arguments = listOf(navArgument("movie_type")
-                        {
-                            type = NavType.StringType
-                        })
+                        route = Screen.MovieDetail.route,
                     ) { entry ->
-                        val type = entry.arguments!!.getString("movie_type") ?: ""
-                        var listOfMovies: List<UpcomingMovies.Movie> = listOf()
-                        if (type == "TOP_MOVIES") {
-                            listOfMovies = viewModel.movieState.data
-                        } else if (type == "TV_SHOWS") {
-                            listOfMovies = viewModel.upcomingMovieList.data
-                        }
                         val selectedMovie = viewModel.selectedMovie
                         MovieDetailScreen(
                             viewModel = viewModel,
                             selected = selectedMovie,
-                            listOfMovies = listOfMovies,
                             onBackPressed = {
                                 navController.navigateUp()
                             }
