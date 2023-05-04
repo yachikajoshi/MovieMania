@@ -1,5 +1,6 @@
 package com.yachikajoshi.movielist.ui.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants
@@ -44,13 +46,12 @@ import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
 fun MovieDetailScreen(
     selected: MovieResponse.Movie,
     onBackPressed: () -> Unit,
-    viewModel: MoviesViewModel
+    viewModel: MoviesViewModel, onMovieClicked: (movieId: String) -> Unit
 ) {
 
     var selectedMovie by remember { mutableStateOf(selected) }
     val bookmarks = remember { mutableStateListOf<MovieResponse.Movie>() }
     val scrollState = rememberScrollState()
-
     val isBookmarked by remember {
         derivedStateOf {
             bookmarks.contains(selectedMovie)
@@ -93,6 +94,13 @@ fun MovieDetailScreen(
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
+                items(viewModel.suggestedMovieState.value.data) { movie ->
+                    MovieItems(movie = movie,
+                        Modifier.clickable {
+                            selectedMovie = movie
+                            viewModel.getTrailer(movieId = movie.id)
+                        })
+                }
             }
         }
     }
@@ -292,28 +300,51 @@ fun MovieDescription(
 @Composable
 fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
     val trailerState by viewModel.trailer.collectAsState()
-    if (trailerState.data.success || trailerState.data.results.isNotEmpty()) {
+    if (trailerState.data.results.isNotEmpty()) {
         val context = LocalContext.current
         val lifecycleOwner = LocalLifecycleOwner.current
-        val youTubePlayerView = remember {
-            YouTubePlayerView(context).apply {
-                addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                        super.onReady(youTubePlayer)
+        val youTubePlayerListener = remember {
+            object : AbstractYouTubePlayerListener() {
+                var youTubePlayer: YouTubePlayer? = null
+                    private set
+
+                override fun onReady(youTubePlayer: YouTubePlayer) {
+                    super.onReady(youTubePlayer)
+                    this.youTubePlayer = youTubePlayer
+                    if (trailerState.data.results.isNotEmpty()) {
                         youTubePlayer.loadVideo(
                             trailerState.data.results[trailerState.data.results.size - 1].key,
                             0f
                         )
                     }
-                })
+                }
+            }
+        }
+
+        val iFramePlayerOptions = IFramePlayerOptions.Builder()
+            .controls(1)    //0 to disable seekbar
+            .build()
+
+        val youTubePlayerView = remember {
+            YouTubePlayerView(context).apply {
+                enableAutomaticInitialization = false
+                initialize(youTubePlayerListener, iFramePlayerOptions)
             }
         }
         AndroidView(
             modifier = Modifier.fillMaxWidth(),
-            factory = { youTubePlayerView }
+            factory = {
+                youTubePlayerView
+            }
         )
-        DisposableEffect(key1 = youTubePlayerView, effect = {
+        DisposableEffect(key1 = youTubePlayerView, key2 = trailerState, effect = {
             lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
+            if (trailerState.data.results.isNotEmpty()) {
+                youTubePlayerListener.youTubePlayer?.loadVideo(
+                    trailerState.data.results[trailerState.data.results.size - 1].key,
+                    0f
+                )
+            }
             onDispose {
                 lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
             }
@@ -321,7 +352,7 @@ fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
     } else {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(Constants.IMAGE_URL + posterPath)
+                .data(IMAGE_URL + posterPath)
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.outline_share_24),

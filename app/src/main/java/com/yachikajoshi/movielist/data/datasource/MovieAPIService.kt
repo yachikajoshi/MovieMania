@@ -23,4 +23,10 @@ interface MovieAPIService {
         @Query("api_key") apiKey: String
     ): MovieTrailer
 
+    @GET("movie/{movieId}/similar")
+    suspend fun getSuggestedMovies(
+        @Path("movieId") movieId: String,
+        @Query("api_key") apiKey: String
+    ): MovieResponse
+
 }

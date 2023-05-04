@@ -17,4 +17,6 @@ interface MoviesRepository {
 
     suspend fun getTrendingMovies(): MovieResponse
 
+    suspend fun getSuggestedMovies(movieId: String): MovieResponse
+
 }
