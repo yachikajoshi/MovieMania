@@ -264,13 +264,13 @@ fun MovieDescription(
             .fillMaxWidth()
             .padding(horizontal = 10.dp)
     ) {
-        if (movie.media_type=="tv"){
-        Text(
-            color = Color.White,
-            text = movie.name,
-            style = MaterialTheme.typography.h5
-        )
-        }else{
+        if (movie.media_type == "tv") {
+            Text(
+                color = Color.White,
+                text = movie.name,
+                style = MaterialTheme.typography.h5
+            )
+        } else {
             Text(
                 color = Color.White,
                 text = movie.title,

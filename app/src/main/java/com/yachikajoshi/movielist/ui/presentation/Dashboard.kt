@@ -145,7 +145,7 @@ fun TopRatedMovies(
         modifier = Modifier
             .fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(5.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         if (modelStateOfTopMovies.isLoading) {
             items(5) { int ->
@@ -201,7 +201,7 @@ fun TrendingMovies(modelStateOfTrendingMovies: MovieState, onMovieClicked: (movi
         contentPadding = PaddingValues(
             horizontal = 10.dp, vertical = 10.dp
         ),
-        horizontalArrangement = Arrangement.spacedBy(5.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         if (modelStateOfTrendingMovies.isLoading) {
             items(5) { int ->
