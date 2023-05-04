@@ -25,10 +25,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yachikajoshi.movielist.R
+import com.yachikajoshi.movielist.common.Constants
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
 import com.yachikajoshi.movielist.common.getGenreNames
 import com.yachikajoshi.movielist.common.getLanguageName
@@ -88,7 +90,6 @@ fun MovieDetailScreen(
                 onBackPressed = {
                     onBackPressed()
                 })
-            Divider()
             Spacer(modifier = Modifier.height(16.dp))
             MovieDescription(
                 movie = selectedMovie
@@ -175,7 +176,8 @@ fun MovieHeader(
         Modifier
             .fillMaxSize()
     ) {
-        ExoPlayerView(viewModel = viewModel)
+        ExoPlayerView(viewModel = viewModel, movie.poster_path)
+
         TopAppBar(
             elevation = 0.dp,
             modifier = modifier,
@@ -262,11 +264,19 @@ fun MovieDescription(
             .fillMaxWidth()
             .padding(horizontal = 10.dp)
     ) {
+        if (movie.media_type=="tv"){
         Text(
             color = Color.White,
-            text = movie.title,
+            text = movie.name,
             style = MaterialTheme.typography.h5
         )
+        }else{
+            Text(
+                color = Color.White,
+                text = movie.title,
+                style = MaterialTheme.typography.h5
+            )
+        }
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = movie.overview,
@@ -311,9 +321,9 @@ fun MovieItem(
 }
 
 @Composable
-fun ExoPlayerView(viewModel: MoviesViewModel) {
+fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
     val trailerState by viewModel.trailer.collectAsState()
-    if (trailerState.data.isNotEmpty()) {
+    if (trailerState.data.success || trailerState.data.results.isNotEmpty()) {
         val context = LocalContext.current
         val lifecycleOwner = LocalLifecycleOwner.current
         val youTubePlayerView = remember {
@@ -322,7 +332,7 @@ fun ExoPlayerView(viewModel: MoviesViewModel) {
                     override fun onReady(youTubePlayer: YouTubePlayer) {
                         super.onReady(youTubePlayer)
                         youTubePlayer.loadVideo(
-                            trailerState.data[trailerState.data.size - 1].key,
+                            trailerState.data.results[trailerState.data.results.size - 1].key,
                             0f
                         )
                     }
@@ -339,6 +349,18 @@ fun ExoPlayerView(viewModel: MoviesViewModel) {
                 lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
             }
         })
+    } else {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(Constants.IMAGE_URL + posterPath)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.outline_share_24),
+            contentDescription = "dec",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
     }
 }
 

@@ -41,7 +41,11 @@ fun Modifier.shimmerEffect(): Modifier = composed {
 
 fun List<Int>.getGenreNames(): String {
     var genresString = mutableListOf<String>()
-    this.forEach { genresString.add(GENRES[it].toString()) }
+    this.forEach {
+        if (GENRES[it].toString() != "null") {
+            genresString.add(GENRES[it].toString())
+        }
+    }
     return genresString.toString().removePrefix("[").removeSuffix("]")
 }
 

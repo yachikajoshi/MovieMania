@@ -28,7 +28,7 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
     var upcomingMovieList by mutableStateOf(MovieState())
         private set
 
-    private var _trailer = MutableStateFlow(TrailerState())
+    private var _trailer = MutableStateFlow(TrailerState(MovieTrailer()))
     val trailer = _trailer.asStateFlow()
 
     init {
@@ -93,10 +93,10 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
             _trailer.value = when (val response = movieListUseCase.getTrailer(movieId)) {
                 is Resource.Error -> TrailerState(
                     error = response.message ?: "",
-                    data = emptyList()
+                    data = MovieTrailer()
                 )
-                is Resource.Loading -> TrailerState(isLoading = true, data = emptyList())
-                is Resource.Success -> TrailerState(data = response.data!!.results)
+                is Resource.Loading -> TrailerState(isLoading = true, data = MovieTrailer())
+                is Resource.Success -> TrailerState(data = response.data!!)
             }
         }
     }
@@ -117,7 +117,7 @@ data class MovieState(
 )
 
 data class TrailerState(
-    var data: List<MovieTrailer.Trailer> = emptyList(),
+    var data: MovieTrailer,
     var error: String = "",
     var isLoading: Boolean = false
 )
