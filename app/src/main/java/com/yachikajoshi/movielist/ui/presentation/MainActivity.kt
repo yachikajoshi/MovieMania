@@ -37,12 +37,29 @@ class MainActivity : ComponentActivity() {
                                 viewModel.getTrailer(movieId = selectedMovie.id)
                                 viewModel.getSuggestedMovies(selectedMovie.id)
                                 navController.navigate(Screen.MovieDetail.route)
+                            },
+                            onSeeMoreClicked = { movieList ->
+                                viewModel.seeMoreMovieList(movieList)
+                                navController.navigate(Screen.SeeMore.route)
                             })
                     }
                     composable(route = Screen.Search.route) {
                         Search(onBackPressed = {
                             navController.navigateUp()
                         })
+                    }
+                    composable(route = Screen.SeeMore.route) {
+                        SeeMoreItem(
+                            movieList = viewModel.seeMoreMovieList,
+                            onMovieClicked = { selectedMovie ->
+                                viewModel.selectedMovie(movie = selectedMovie)
+                                viewModel.getTrailer(movieId = selectedMovie.id)
+                                viewModel.getSuggestedMovies(selectedMovie.id)
+                                navController.navigate(Screen.MovieDetail.route)
+                            },
+                            onBackPressed = {
+                                navController.navigateUp()
+                            })
                     }
                     composable(
                         route = Screen.MovieDetail.route,
