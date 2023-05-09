@@ -15,7 +15,10 @@ interface MovieAPIService {
     suspend fun getComingSoonMovies(@Query("api_key") apiKey: String): MovieResponse
 
     @GET("trending/all/week")
-    suspend fun getTrending(@Query("api_key") apiKey: String): MovieResponse
+    suspend fun getTrending(
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int
+    ): MovieResponse
 
     @GET("movie/{movieId}/videos")
     suspend fun getTrailer(
@@ -28,5 +31,4 @@ interface MovieAPIService {
         @Path("movieId") movieId: String,
         @Query("api_key") apiKey: String
     ): MovieResponse
-
 }

@@ -6,12 +6,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.yachikajoshi.movielist.data.model.MovieResponse
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.yachikajoshi.movielist.ui.theme.MovieListTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModels<MoviesViewModel>()
+    private val allMoviesViewModel by viewModels<AllMoviesViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +38,6 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(Screen.MovieDetail.route)
                             },
                             onSeeMoreClicked = { movieList ->
-                                viewModel.seeMoreMovieList(movieList)
                                 navController.navigate(Screen.SeeMore.route)
                             })
                     }
@@ -49,17 +47,18 @@ class MainActivity : ComponentActivity() {
                         })
                     }
                     composable(route = Screen.SeeMore.route) {
+                        val movies = allMoviesViewModel.moviePager.collectAsLazyPagingItems()
                         SeeMoreItem(
-                            movieList = viewModel.seeMoreMovieList,
+                            movies = movies,
                             onMovieClicked = { selectedMovie ->
                                 viewModel.selectedMovie(movie = selectedMovie)
                                 viewModel.getTrailer(movieId = selectedMovie.id)
                                 viewModel.getSuggestedMovies(selectedMovie.id)
                                 navController.navigate(Screen.MovieDetail.route)
-                            },
-                            onBackPressed = {
-                                navController.navigateUp()
-                            })
+                            }
+                        ) {
+                            navController.navigateUp()
+                        }
                     }
                     composable(
                         route = Screen.MovieDetail.route,
