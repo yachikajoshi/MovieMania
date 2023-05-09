@@ -20,9 +20,6 @@ import com.yachikajoshi.movielist.ui.theme.TextColor
 
 @Composable
 fun MovieItems(movie: MovieResponse.Movie, modifier: Modifier = Modifier) {
-//    var isLoading by remember {
-//        mutableStateOf(true)
-//    }
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(Constants.IMAGE_URL + movie.poster_path)
@@ -31,16 +28,12 @@ fun MovieItems(movie: MovieResponse.Movie, modifier: Modifier = Modifier) {
         placeholder = painterResource(R.drawable.outline_share_24),
         contentDescription = "dec",
         contentScale = ContentScale.Crop,
-//        onSuccess = { isLoading = false },
         modifier = modifier
             .height(180.dp)
             .width(132.dp)
             .clip(RoundedCornerShape(5))
             .border(width = 1.dp, color = TextColor, shape = RoundedCornerShape(5))
     )
-//    AnimatedVisibility(visible = isLoading, enter = fadeIn(), exit = fadeOut()) {
-//        CircularProgressIndicator()
-//    }
 }
 
 

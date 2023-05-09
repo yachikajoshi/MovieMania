@@ -122,6 +122,14 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
         selectedMovie = movie
     }
 
+
+    var seeMoreMovieList by mutableStateOf(listOf(MovieResponse.Movie()))
+        private set
+
+    fun seeMoreMovieList(movie: List<MovieResponse.Movie>) {
+        seeMoreMovieList = movie
+    }
+
 }
 
 data class MovieState(
