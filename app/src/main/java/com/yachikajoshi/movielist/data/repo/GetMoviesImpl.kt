@@ -16,7 +16,7 @@ import com.yachikajoshi.movielist.domain.repo.MoviesRepository
 class GetMoviesImpl(private val movieAPIService: MovieAPIService) : MoviesRepository {
 
     override suspend fun getTop10Movies(): MovieResponse =
-        movieAPIService.getTop10Movies(apiKey = API_KEY)
+        movieAPIService.getTop10Movies(apiKey = API_KEY, page = 1)
 
     override suspend fun getComingSoonMovies(): MovieResponse =
         movieAPIService.getComingSoonMovies(apiKey = API_KEY)
@@ -32,4 +32,8 @@ class GetMoviesImpl(private val movieAPIService: MovieAPIService) : MoviesReposi
 
     override suspend fun getAllTrendingMovies(page: Int): MovieResponse =
         movieAPIService.getTrending(apiKey = API_KEY, page = page)
+
+    override suspend fun getAllTopRatedMovies(page: Int): MovieResponse =
+        movieAPIService.getTop10Movies(apiKey = API_KEY, page = page)
+
 }

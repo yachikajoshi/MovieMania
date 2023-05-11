@@ -8,4 +8,7 @@ class ListAllMoviesUseCase @Inject constructor(private val movieRepository: Movi
 
     suspend fun getAllTrending(page: Int): MovieResponse =
         movieRepository.getAllTrendingMovies(page = page)
+
+    suspend fun getAllTopRatedMovies(page: Int): MovieResponse =
+        movieRepository.getAllTopRatedMovies(page = page)
 }

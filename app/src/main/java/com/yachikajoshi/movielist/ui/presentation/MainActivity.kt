@@ -6,9 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.yachikajoshi.movielist.ui.theme.MovieListTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,17 +39,37 @@ class MainActivity : ComponentActivity() {
                                 viewModel.getSuggestedMovies(selectedMovie.id)
                                 navController.navigate(Screen.MovieDetail.route)
                             },
-                            onSeeMoreClicked = { movieList ->
-                                navController.navigate(Screen.SeeMore.route)
-                            })
+                            onClickTrendingSeeMore = {
+                                navController.navigate(Screen.SeeMore.route + "/trending")
+                            }, onClickTopRatedSeeMore = {
+                                navController.navigate(Screen.SeeMore.route + "/topRated")
+                            }
+                        )
                     }
                     composable(route = Screen.Search.route) {
                         Search(onBackPressed = {
                             navController.navigateUp()
                         })
                     }
-                    composable(route = Screen.SeeMore.route) {
-                        val movies = allMoviesViewModel.moviePager.collectAsLazyPagingItems()
+                    composable(
+                        route = Screen.SeeMore.route + "/{see_more}",
+                        arguments = listOf(navArgument(name = "see_more") {
+                            type = NavType.StringType
+                        })
+
+                    ) { backStackEntry ->
+                        val navigateTo = backStackEntry.arguments?.getString("see_more")
+                        val movies = when (navigateTo) {
+                            "trending" -> {
+                                allMoviesViewModel.moviePager.collectAsLazyPagingItems()
+                            }
+                            "topRated" -> {
+                                allMoviesViewModel.topRatedMoviePager.collectAsLazyPagingItems()
+                            }
+                            else -> {
+                                allMoviesViewModel.moviePager.collectAsLazyPagingItems()
+                            }
+                        }
                         SeeMoreItem(
                             movies = movies,
                             onMovieClicked = { selectedMovie ->
