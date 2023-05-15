@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                         Dashboard(navController = navController,
                             modelStateOfTrendingMovies = viewModel.trendingMovieState,
                             modelStateOfTopMovies = viewModel.topRatedMovieState,
-                            modelStateOfTvShows = viewModel.upcomingMovieList,
+                            modelStateOfUpcomingMovies = viewModel.upcomingMovieList,
                             onMovieClicked = { selectedMovie ->
                                 viewModel.selectedMovie(movie = selectedMovie)
                                 viewModel.getTrailer(movieId = selectedMovie.id)

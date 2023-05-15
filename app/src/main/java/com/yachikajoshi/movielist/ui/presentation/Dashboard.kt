@@ -32,7 +32,7 @@ fun Dashboard(
     navController: NavController,
     modelStateOfTrendingMovies: MovieState,
     modelStateOfTopMovies: MovieState,
-    modelStateOfTvShows: MovieState,
+    modelStateOfUpcomingMovies: MovieState,
     onMovieClicked: (
         movie: MovieResponse.Movie
     ) -> Unit, onClickTrendingSeeMore: () -> Unit,
@@ -47,7 +47,7 @@ fun Dashboard(
                 paddingValues = it,
                 modelStateOfTopMovies = modelStateOfTopMovies,
                 modelStateOfTrendingMovies = modelStateOfTrendingMovies,
-                modelStateOfTvShows = modelStateOfTvShows,
+                modelStateOfUpcomingMovies = modelStateOfUpcomingMovies,
                 onMovieClicked = onMovieClicked,
                 onClickTrendingSeeMore = onClickTrendingSeeMore,
                 onClickTopRatedSeeMore = onClickTopRatedSeeMore
@@ -61,7 +61,7 @@ fun MainContent(
     paddingValues: PaddingValues,
     modelStateOfTopMovies: MovieState,
     modelStateOfTrendingMovies: MovieState,
-    modelStateOfTvShows: MovieState,
+    modelStateOfUpcomingMovies: MovieState,
     onMovieClicked: (
         movie: MovieResponse.Movie
     ) -> Unit, onClickTrendingSeeMore: () -> Unit,
@@ -73,7 +73,7 @@ fun MainContent(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            LatestMovies(modelStateOfTopMovies)
+            LatestMovies(modelStateOfUpcomingMovies)
             TrendingMovies(modelStateOfTrendingMovies, onMovieClicked, onClickTrendingSeeMore)
             Spacer(modifier = Modifier.padding(10.dp))
             TopRatedMovies(modelStateOfTopMovies, onMovieClicked, onClickTopRatedSeeMore)
