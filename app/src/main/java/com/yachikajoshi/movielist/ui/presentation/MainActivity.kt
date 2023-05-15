@@ -91,11 +91,6 @@ class MainActivity : ComponentActivity() {
                             selected = selectedMovie,
                             onBackPressed = {
                                 navController.navigateUp()
-                            },
-                            onMovieClicked = { id ->
-//                                viewModel.selectedMovie(movie = selectedMovie)
-//                                viewModel.getTrailer(movieId = id)
-//                                viewModel.getSuggestedMovies(id)
                             }
                         )
                     }

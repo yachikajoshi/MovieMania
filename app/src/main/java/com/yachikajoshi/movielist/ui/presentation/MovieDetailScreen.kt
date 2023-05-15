@@ -46,7 +46,7 @@ import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
 fun MovieDetailScreen(
     selected: MovieResponse.Movie,
     onBackPressed: () -> Unit,
-    viewModel: MoviesViewModel, onMovieClicked: (movieId: String) -> Unit
+    viewModel: MoviesViewModel
 ) {
 
     var selectedMovie by remember { mutableStateOf(selected) }

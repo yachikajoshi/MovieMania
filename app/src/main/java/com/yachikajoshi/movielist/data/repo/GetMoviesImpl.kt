@@ -5,6 +5,7 @@ import com.yachikajoshi.movielist.data.datasource.MovieAPIService
 import com.yachikajoshi.movielist.data.model.MovieTrailer
 import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.domain.repo.MoviesRepository
+import kotlinx.coroutines.delay
 
 /**
  * Here we created the implementation class for
@@ -30,8 +31,11 @@ class GetMoviesImpl(private val movieAPIService: MovieAPIService) : MoviesReposi
     override suspend fun getSuggestedMovies(movieId: String): MovieResponse =
         movieAPIService.getSuggestedMovies(movieId = movieId, apiKey = API_KEY)
 
-    override suspend fun getAllTrendingMovies(page: Int): MovieResponse =
-        movieAPIService.getTrending(apiKey = API_KEY, page = page)
+    override suspend fun getAllTrendingMovies(page: Int): MovieResponse {
+        delay(2000L)
+        return movieAPIService.getTrending(apiKey = API_KEY, page = page)
+    }
+
 
     override suspend fun getAllTopRatedMovies(page: Int): MovieResponse =
         movieAPIService.getTop10Movies(apiKey = API_KEY, page = page)
