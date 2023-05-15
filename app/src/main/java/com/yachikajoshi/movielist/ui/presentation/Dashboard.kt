@@ -32,10 +32,11 @@ fun Dashboard(
     navController: NavController,
     modelStateOfTrendingMovies: MovieState,
     modelStateOfTopMovies: MovieState,
-    modelStateOfTvShows: MovieState,
+    modelStateOfUpcomingMovies: MovieState,
     onMovieClicked: (
         movie: MovieResponse.Movie
-    ) -> Unit, onSeeMoreClicked: (movieList: List<MovieResponse.Movie>) -> Unit
+    ) -> Unit, onClickTrendingSeeMore: () -> Unit,
+    onClickTopRatedSeeMore: () -> Unit
 ) {
 
     Scaffold(
@@ -46,9 +47,10 @@ fun Dashboard(
                 paddingValues = it,
                 modelStateOfTopMovies = modelStateOfTopMovies,
                 modelStateOfTrendingMovies = modelStateOfTrendingMovies,
-                modelStateOfTvShows = modelStateOfTvShows,
+                modelStateOfUpcomingMovies = modelStateOfUpcomingMovies,
                 onMovieClicked = onMovieClicked,
-                onSeeMoreClicked = onSeeMoreClicked
+                onClickTrendingSeeMore = onClickTrendingSeeMore,
+                onClickTopRatedSeeMore = onClickTopRatedSeeMore
             )
         }
     )
@@ -59,10 +61,11 @@ fun MainContent(
     paddingValues: PaddingValues,
     modelStateOfTopMovies: MovieState,
     modelStateOfTrendingMovies: MovieState,
-    modelStateOfTvShows: MovieState,
+    modelStateOfUpcomingMovies: MovieState,
     onMovieClicked: (
         movie: MovieResponse.Movie
-    ) -> Unit, onSeeMoreClicked: (movieList: List<MovieResponse.Movie>) -> Unit
+    ) -> Unit, onClickTrendingSeeMore: () -> Unit,
+    onClickTopRatedSeeMore: () -> Unit
 ) {
     Box {
         Column(
@@ -70,10 +73,10 @@ fun MainContent(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            LatestMovies(modelStateOfTopMovies)
-            TrendingMovies(modelStateOfTrendingMovies, onMovieClicked, onSeeMoreClicked)
+            LatestMovies(modelStateOfUpcomingMovies)
+            TrendingMovies(modelStateOfTrendingMovies, onMovieClicked, onClickTrendingSeeMore)
             Spacer(modifier = Modifier.padding(10.dp))
-            TopRatedMovies(modelStateOfTopMovies, onMovieClicked, onSeeMoreClicked)
+            TopRatedMovies(modelStateOfTopMovies, onMovieClicked, onClickTopRatedSeeMore)
 
         }
         TopAppBar(backgroundColor = Color.Transparent,
@@ -112,7 +115,7 @@ fun MainContent(
 fun TopRatedMovies(
     modelStateOfTopMovies: MovieState,
     onMovieClicked: (movie: MovieResponse.Movie) -> Unit,
-    onSeeMoreClicked: (movieList: List<MovieResponse.Movie>) -> Unit
+    onClickTopRatedSeeMore: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -132,7 +135,7 @@ fun TopRatedMovies(
             text = "See more",
             modifier = Modifier
                 .padding(horizontal = 10.dp)
-                .clickable { onSeeMoreClicked(modelStateOfTopMovies.data) },
+                .clickable { onClickTopRatedSeeMore() },
             style = TextStyle(
                 fontSize = 14.sp,
                 fontStyle = FontStyle(R.font.poppins_semi_bold),
@@ -170,7 +173,7 @@ fun TopRatedMovies(
 fun TrendingMovies(
     modelStateOfTrendingMovies: MovieState,
     onMovieClicked: (movie: MovieResponse.Movie) -> Unit,
-    onSeeMoreClicked: (movieList: List<MovieResponse.Movie>) -> Unit
+    onSeeMoreClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -191,7 +194,7 @@ fun TrendingMovies(
             text = "See more",
             modifier = Modifier
                 .padding(horizontal = 10.dp)
-                .clickable { onSeeMoreClicked(modelStateOfTrendingMovies.data) },
+                .clickable { onSeeMoreClicked() },
             style = TextStyle(
                 fontSize = 14.sp,
                 fontStyle = FontStyle(R.font.poppins_medium),

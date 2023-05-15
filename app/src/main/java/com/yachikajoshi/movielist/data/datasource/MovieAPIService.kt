@@ -9,13 +9,19 @@ import retrofit2.http.Query
 interface MovieAPIService {
 
     @GET("movie/top_rated")
-    suspend fun getTop10Movies(@Query("api_key") apiKey: String): MovieResponse
+    suspend fun getTop10Movies(
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int
+    ): MovieResponse
 
     @GET("movie/upcoming")
     suspend fun getComingSoonMovies(@Query("api_key") apiKey: String): MovieResponse
 
     @GET("trending/all/week")
-    suspend fun getTrending(@Query("api_key") apiKey: String): MovieResponse
+    suspend fun getTrending(
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int
+    ): MovieResponse
 
     @GET("movie/{movieId}/videos")
     suspend fun getTrailer(
@@ -28,5 +34,4 @@ interface MovieAPIService {
         @Path("movieId") movieId: String,
         @Query("api_key") apiKey: String
     ): MovieResponse
-
 }
