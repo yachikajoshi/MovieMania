@@ -1,19 +1,16 @@
 package com.yachikajoshi.movielist.ui.presentation
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +18,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,10 +30,10 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yachikajoshi.movielist.R
-import com.yachikajoshi.movielist.common.Constants
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
 import com.yachikajoshi.movielist.common.getGenreNames
 import com.yachikajoshi.movielist.common.getLanguageName
+import com.yachikajoshi.movielist.data.model.CastResponse
 import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.ui.theme.Background
 import com.yachikajoshi.movielist.ui.theme.TextColor
@@ -60,6 +58,7 @@ fun MovieDetailScreen(
 
     LaunchedEffect(key1 = selectedMovie) {
         scrollState.animateScrollTo(0)
+        viewModel.getCast(selectedMovie.id)
     }
 
     Scaffold() {
@@ -86,8 +85,9 @@ fun MovieDetailScreen(
                 })
             Spacer(modifier = Modifier.height(16.dp))
             MovieDescription(
-                movie = selectedMovie
+                movie = selectedMovie, castList = viewModel.castState.data
             )
+
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -167,12 +167,10 @@ fun MovieHeader(
     onBookmarkChanged: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    Box(
+    Column(
         Modifier
             .fillMaxSize()
     ) {
-        ExoPlayerView(viewModel = viewModel, movie.poster_path)
-
         TopAppBar(
             elevation = 0.dp,
             modifier = modifier,
@@ -213,6 +211,8 @@ fun MovieHeader(
                 }
             }
         )
+        ExoPlayerView(viewModel = viewModel, movie.poster_path)
+
     }
 
 }
@@ -220,7 +220,8 @@ fun MovieHeader(
 @Composable
 fun MovieDescription(
     modifier: Modifier = Modifier,
-    movie: MovieResponse.Movie
+    movie: MovieResponse.Movie,
+    castList: List<CastResponse.Cast>
 ) {
     val spannedTextGenre = buildAnnotatedString {
         withStyle(
@@ -236,6 +237,25 @@ fun MovieDescription(
             )
         ) {
             append(movie.genre_ids.getGenreNames())
+        }
+    }
+    val spannedTextCast = buildAnnotatedString {
+        withStyle(
+            style = SpanStyle(
+                color = ViewAllTextColor
+            )
+        ) {
+            append("Cast : ")
+        }
+        withStyle(
+            style = SpanStyle(
+                color = TextColor,
+            )
+        ) {
+            castList.sortedBy { it.cast_id }.take(4).forEach { append("${it.name}, ") }
+        }
+        withStyle(style = SpanStyle(color = TextColor, textDecoration = TextDecoration.Underline)) {
+            append("more")
         }
     }
     val spannedTextLanguage = buildAnnotatedString {
@@ -288,11 +308,16 @@ fun MovieDescription(
             text = spannedTextGenre,
             style = MaterialTheme.typography.body2
         )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = spannedTextCast,
+            style = MaterialTheme.typography.body2,
+        )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             color = Color(0XFFFFFFFF),
             text = "Suggested Movies",
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.subtitle1,
         )
     }
 }

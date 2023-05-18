@@ -99,10 +99,10 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
-    private fun getCast(movieId: String) {
+     fun getCast(movieId: String) {
         viewModelScope.launch {
             val response = castUseCase.getCast(movieId = movieId)
-            when (response) {
+            castState=  when (response) {
                 is Resource.Error -> {
                     CastState(error = response.message ?: "")
                 }
