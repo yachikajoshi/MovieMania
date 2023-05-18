@@ -2,6 +2,7 @@ package com.yachikajoshi.movielist.data.repo
 
 import com.yachikajoshi.movielist.common.Constants.API_KEY
 import com.yachikajoshi.movielist.data.datasource.MovieAPIService
+import com.yachikajoshi.movielist.data.model.CastResponse
 import com.yachikajoshi.movielist.data.model.MovieTrailer
 import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.domain.repo.MoviesRepository
@@ -39,5 +40,8 @@ class GetMoviesImpl(private val movieAPIService: MovieAPIService) : MoviesReposi
 
     override suspend fun getAllTopRatedMovies(page: Int): MovieResponse =
         movieAPIService.getTop10Movies(apiKey = API_KEY, page = page)
+
+    override suspend fun getCast(movieId: String): CastResponse =
+        movieAPIService.movieCast(movieId = movieId, apiKey = API_KEY)
 
 }

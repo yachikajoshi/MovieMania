@@ -3,7 +3,7 @@ package com.yachikajoshi.movielist.data.model
 data class CastResponse(
     val cast: List<Cast>,
     val crew: List<Crew>,
-    val id: Int
+    val id: Int = 0
 ) {
     data class Cast(
         val adult: Boolean,

@@ -1,5 +1,6 @@
 package com.yachikajoshi.movielist.domain.repo
 
+import com.yachikajoshi.movielist.data.model.CastResponse
 import com.yachikajoshi.movielist.data.model.MovieTrailer
 import com.yachikajoshi.movielist.data.model.MovieResponse
 
@@ -19,7 +20,8 @@ interface MoviesRepository {
 
     suspend fun getSuggestedMovies(movieId: String): MovieResponse
 
-    suspend fun getAllTrendingMovies(page:Int):MovieResponse
-    suspend fun getAllTopRatedMovies(page:Int):MovieResponse
+    suspend fun getAllTrendingMovies(page: Int): MovieResponse
+    suspend fun getAllTopRatedMovies(page: Int): MovieResponse
+    suspend fun getCast(movieId: String): CastResponse
 
 }
