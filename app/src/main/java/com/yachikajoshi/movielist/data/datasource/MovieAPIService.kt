@@ -34,4 +34,10 @@ interface MovieAPIService {
         @Path("movieId") movieId: String,
         @Query("api_key") apiKey: String
     ): MovieResponse
+
+    @GET("movie/{movieId}/credits")
+    suspend fun movieCast(
+        @Path("movieId") movieId: String,
+        @Query("api_key") apiKey: String
+    )
 }
