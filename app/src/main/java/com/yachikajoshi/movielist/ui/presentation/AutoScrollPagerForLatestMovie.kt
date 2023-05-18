@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,7 +21,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Scale
@@ -70,14 +75,47 @@ fun LatestMovies(movieState: MovieState) {
                             )
                         )
                 )
-                Text(
-                    text = movieState.data[page].title,
-                    style = MaterialTheme.typography.subtitle1,
-                    color = Color.White,
+                Column(
                     modifier = Modifier
-                        .padding(bottom = 60.dp, start = 10.dp)
+                        .fillMaxWidth()
                         .align(Alignment.BottomStart)
-                )
+                ) {
+                    Text(
+                        text = movieState.data[page].release_date.take(4),
+                        style = MaterialTheme.typography.caption,
+                        color = Color.White,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                    )
+                    Text(
+                        text = movieState.data[page].title,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = Color.White,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .padding(bottom = 60.dp, start = 10.dp, top = 5.dp)
+                    ) {
+                        Text(
+                            text = "IMDB",
+                            modifier = Modifier
+                                .background(Color.Yellow, RoundedCornerShape(20))
+                                .padding(horizontal = 3.dp),
+                            color = Color.Black,
+                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        )
+                        Text(
+                            text = movieState.data[page].vote_average.toString(),
+                            style = MaterialTheme.typography.subtitle1,
+                            color = Color.White,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(horizontal = 5.dp)
+                        )
+                    }
+
+                }
             }
         }
 

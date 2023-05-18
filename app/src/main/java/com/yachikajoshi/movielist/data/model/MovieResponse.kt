@@ -20,5 +20,6 @@ data class MovieResponse(
         val name: String = "",
         val original_name: String = "",
         val popularity: Double = 0.0,
+        val vote_average:Double=0.0
     )
 }

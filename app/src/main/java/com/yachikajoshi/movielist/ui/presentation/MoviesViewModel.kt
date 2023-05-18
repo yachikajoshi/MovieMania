@@ -6,8 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yachikajoshi.movielist.common.Resource
+import com.yachikajoshi.movielist.data.model.CastResponse
 import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.data.model.MovieTrailer
+import com.yachikajoshi.movielist.domain.use_case.CastUseCase
 import com.yachikajoshi.movielist.domain.use_case.MovieListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +18,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieListUseCase) :
+class MoviesViewModel @Inject constructor(
+    private val movieListUseCase: MovieListUseCase,
+    private val castUseCase: CastUseCase
+) :
     ViewModel() {
 
     var topRatedMovieState by mutableStateOf(MovieState())
@@ -26,6 +31,9 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
         private set
 
     var upcomingMovieList by mutableStateOf(MovieState())
+        private set
+
+    var castState by mutableStateOf(CastState())
         private set
 
     private var _trailer = MutableStateFlow(TrailerState(MovieTrailer()))
@@ -91,6 +99,23 @@ class MoviesViewModel @Inject constructor(private val movieListUseCase: MovieLis
         }
     }
 
+     fun getCast(movieId: String) {
+        viewModelScope.launch {
+            val response = castUseCase.getCast(movieId = movieId)
+            castState=  when (response) {
+                is Resource.Error -> {
+                    CastState(error = response.message ?: "")
+                }
+                is Resource.Loading -> {
+                    CastState(isLoading = true)
+                }
+                is Resource.Success -> {
+                    CastState(data = response.data!!.cast)
+                }
+            }
+        }
+    }
+
     fun getTrailer(movieId: String) {
         viewModelScope.launch {
             _trailer.value = when (val response = movieListUseCase.getTrailer(movieId)) {
@@ -140,6 +165,12 @@ data class MovieState(
 
 data class TrailerState(
     var data: MovieTrailer,
+    var error: String = "",
+    var isLoading: Boolean = false
+)
+
+data class CastState(
+    var data: List<CastResponse.Cast> = emptyList(),
     var error: String = "",
     var isLoading: Boolean = false
 )
