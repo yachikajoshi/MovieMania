@@ -85,9 +85,16 @@ fun MovieDetailScreen(
                 })
             Spacer(modifier = Modifier.height(16.dp))
             MovieDescription(
-                movie = selectedMovie, castList = viewModel.castState.data
+                movie = selectedMovie
             )
-
+            MovieCast(castList = viewModel.castState.data)
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                color = Color(0XFFFFFFFF),
+                text = "Suggested Movies",
+                style = MaterialTheme.typography.subtitle1,
+                modifier = Modifier.padding(start = 10.dp)
+            )
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -221,7 +228,7 @@ fun MovieHeader(
 fun MovieDescription(
     modifier: Modifier = Modifier,
     movie: MovieResponse.Movie,
-    castList: List<CastResponse.Cast>
+//    castList: List<CastResponse.Cast>
 ) {
     val spannedTextGenre = buildAnnotatedString {
         withStyle(
@@ -239,25 +246,25 @@ fun MovieDescription(
             append(movie.genre_ids.getGenreNames())
         }
     }
-    val spannedTextCast = buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(
-                color = ViewAllTextColor
-            )
-        ) {
-            append("Cast : ")
-        }
-        withStyle(
-            style = SpanStyle(
-                color = TextColor,
-            )
-        ) {
-            castList.sortedBy { it.cast_id }.take(4).forEach { append("${it.name}, ") }
-        }
-        withStyle(style = SpanStyle(color = TextColor, textDecoration = TextDecoration.Underline)) {
-            append("more")
-        }
-    }
+//    val spannedTextCast = buildAnnotatedString {
+//        withStyle(
+//            style = SpanStyle(
+//                color = ViewAllTextColor
+//            )
+//        ) {
+//            append("Cast : ")
+//        }
+//        withStyle(
+//            style = SpanStyle(
+//                color = TextColor,
+//            )
+//        ) {
+//            castList.sortedBy { it.cast_id }.take(4).forEach { append("${it.name}, ") }
+//        }
+//        withStyle(style = SpanStyle(color = TextColor, textDecoration = TextDecoration.Underline)) {
+//            append("more")
+//        }
+//    }
     val spannedTextLanguage = buildAnnotatedString {
         withStyle(
             style = SpanStyle(
@@ -310,15 +317,16 @@ fun MovieDescription(
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = spannedTextCast,
+            text = "Cast : ",
             style = MaterialTheme.typography.body2,
+            color = ViewAllTextColor
         )
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            color = Color(0XFFFFFFFF),
-            text = "Suggested Movies",
-            style = MaterialTheme.typography.subtitle1,
-        )
+//        Spacer(modifier = Modifier.height(20.dp))
+//        Text(
+//            color = Color(0XFFFFFFFF),
+//            text = "Suggested Movies",
+//            style = MaterialTheme.typography.subtitle1,
+//        )
     }
 }
 

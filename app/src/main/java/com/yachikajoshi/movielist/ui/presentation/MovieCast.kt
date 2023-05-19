@@ -21,33 +21,37 @@ import com.yachikajoshi.movielist.data.model.CastResponse
 
 @Composable
 fun MovieCast(castList: List<CastResponse.Cast>) {
-    var name = java.lang.StringBuilder()
-    castList.sortedBy { it.cast_id }.forEach {
-        name.append(it.name+", ")
-    }
-    Text(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 5.dp),
-        text = name.toString(),
-        style = MaterialTheme.typography.caption,
-        color = Color.White
-    )
-//    LazyRow(
-//        modifier = Modifier
-//            .fillMaxWidth(),
-//        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-//        horizontalArrangement = Arrangement.spacedBy(10.dp)
-//    ) {
-//        items(castList.sortedBy { it.cast_id }.take(8)) { cast ->
-//            CastItem(cast)
-//        }
+//    var name = java.lang.StringBuilder()
+//    castList.sortedBy { it.cast_id }.forEach {
+//        name.append(it.name+", ")
 //    }
+//    Text(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(top = 5.dp),
+//        text = name.toString(),
+//        style = MaterialTheme.typography.caption,
+//        color = Color.White
+//    )
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        items(castList.sortedBy { it.cast_id }.take(8)) { cast ->
+            CastItem(cast)
+        }
+    }
 }
 
 @Composable
 fun CastItem(cast: CastResponse.Cast) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(Constants.IMAGE_URL + cast.profile_path)
@@ -56,12 +60,12 @@ fun CastItem(cast: CastResponse.Cast) {
             contentScale = ContentScale.Crop,
             contentDescription = null,
             modifier = Modifier
-                .size(100.dp)
+                .size(60.dp)
                 .clip(CircleShape)
         )
         Text(
             modifier = Modifier
-                .fillMaxSize()
+                .width(70.dp)
                 .padding(top = 5.dp),
             text = cast.name,
             style = MaterialTheme.typography.caption,
