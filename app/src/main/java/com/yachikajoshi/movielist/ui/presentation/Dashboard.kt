@@ -125,22 +125,14 @@ fun TopRatedMovies(
             text = "Top Rated",
             modifier = Modifier
                 .padding(horizontal = 10.dp),
-            style = TextStyle(
-                fontSize = 16.sp,
-                fontStyle = FontStyle(R.font.poppins_semi_bold),
-                color = Color.White
-            )
+            style = MaterialTheme.typography.h5
         )
         Text(
             text = "See more",
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .clickable { onClickTopRatedSeeMore() },
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontStyle = FontStyle(R.font.poppins_semi_bold),
-                color = ViewAllTextColor
-            )
+            style = MaterialTheme.typography.body2
         )
     }
     LazyRow(
@@ -184,22 +176,14 @@ fun TrendingMovies(
             text = "Trending",
             modifier = Modifier
                 .padding(horizontal = 10.dp),
-            style = TextStyle(
-                fontSize = 16.sp,
-                fontStyle = FontStyle(R.font.poppins_semi_bold),
-                color = Color.White
-            )
+            style = MaterialTheme.typography.h5
         )
         Text(
             text = "See more",
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .clickable { onSeeMoreClicked() },
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontStyle = FontStyle(R.font.poppins_medium),
-                color = ViewAllTextColor
-            )
+            style = MaterialTheme.typography.body1
         )
     }
     LazyRow(

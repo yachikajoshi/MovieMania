@@ -104,7 +104,7 @@ fun LatestMovies(movieState: MovieState) {
                                 .background(Color.Yellow, RoundedCornerShape(20))
                                 .padding(horizontal = 3.dp),
                             color = Color.Black,
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                            style = MaterialTheme.typography.h6
                         )
                         Text(
                             text = movieState.data[page].vote_average.toString(),

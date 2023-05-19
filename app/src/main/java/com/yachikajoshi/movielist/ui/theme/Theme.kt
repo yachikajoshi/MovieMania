@@ -37,7 +37,7 @@ fun MovieListTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composa
     } else {
         LightColorPalette
     }
-    systemUiController.setStatusBarColor(Color.White,darkIcons = true)
+    systemUiController.setStatusBarColor(Color.White, darkIcons = true)
 
     MaterialTheme(
         colors = colors,
