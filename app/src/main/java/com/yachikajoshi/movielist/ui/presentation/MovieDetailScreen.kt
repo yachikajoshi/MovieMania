@@ -1,11 +1,14 @@
 package com.yachikajoshi.movielist.ui.presentation
 
+import android.text.SpannableString
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -17,11 +20,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -31,24 +37,25 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFram
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
+import com.yachikajoshi.movielist.common.getDuration
 import com.yachikajoshi.movielist.common.getGenreNames
 import com.yachikajoshi.movielist.common.getLanguageName
 import com.yachikajoshi.movielist.data.model.CastResponse
+import com.yachikajoshi.movielist.data.model.MovieDetail
 import com.yachikajoshi.movielist.data.model.MovieResponse
-import com.yachikajoshi.movielist.ui.theme.Background
-import com.yachikajoshi.movielist.ui.theme.TextColor
-import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
+import com.yachikajoshi.movielist.ui.theme.*
+import java.lang.StringBuilder
 
 
 @Composable
 fun MovieDetailScreen(
-    selected: MovieResponse.Movie,
+    selected: MovieDetail,
     onBackPressed: () -> Unit,
     viewModel: MoviesViewModel
 ) {
 
     var selectedMovie by remember { mutableStateOf(selected) }
-    val bookmarks = remember { mutableStateListOf<MovieResponse.Movie>() }
+    val bookmarks = remember { mutableStateListOf<MovieDetail>() }
     val scrollState = rememberScrollState()
     val isBookmarked by remember {
         derivedStateOf {
@@ -58,7 +65,7 @@ fun MovieDetailScreen(
 
     LaunchedEffect(key1 = selectedMovie) {
         scrollState.animateScrollTo(0)
-        viewModel.getCast(selectedMovie.id)
+        viewModel.getCast(selectedMovie.id.toString())
     }
 
     Scaffold() {
@@ -104,8 +111,9 @@ fun MovieDetailScreen(
                 items(viewModel.suggestedMovieState.value.data) { movie ->
                     MovieItems(movie = movie,
                         Modifier.clickable {
-                            selectedMovie = movie
-                            viewModel.getTrailer(movieId = movie.id)
+                            viewModel.selectedMovie(movie.id)
+                            selectedMovie = viewModel.selectedMovie.value.data!!
+//                            viewModel.getTrailer(movieId = movie.id)
                         })
                 }
             }
@@ -169,12 +177,12 @@ fun PlaySection(
 fun MovieHeader(
     viewModel: MoviesViewModel,
     modifier: Modifier = Modifier,
-    movie: MovieResponse.Movie,
+    movie: MovieDetail,
     isBookmarked: Boolean,
     onBookmarkChanged: () -> Unit,
     onBackPressed: () -> Unit
 ) {
-    Column(
+    Box(
         Modifier
             .fillMaxSize()
     ) {
@@ -218,7 +226,7 @@ fun MovieHeader(
                 }
             }
         )
-        ExoPlayerView(viewModel = viewModel, movie.poster_path)
+        ExoPlayerView(viewModel = viewModel, movie.backdrop_path)
 
     }
 
@@ -227,58 +235,53 @@ fun MovieHeader(
 @Composable
 fun MovieDescription(
     modifier: Modifier = Modifier,
-    movie: MovieResponse.Movie,
+    movie: MovieDetail,
 //    castList: List<CastResponse.Cast>
 ) {
     val spannedTextGenre = buildAnnotatedString {
         withStyle(
             style = SpanStyle(
-                color = ViewAllTextColor
+                color = BodyColor,
             )
         ) {
-            append("Genre : ")
+            append(movie.runtime.getDuration())
         }
         withStyle(
             style = SpanStyle(
-                color = TextColor,
+                color = BodyColor,
+                fontWeight = FontWeight.Bold
             )
         ) {
-            append(movie.genre_ids.getGenreNames())
-        }
-    }
-//    val spannedTextCast = buildAnnotatedString {
-//        withStyle(
-//            style = SpanStyle(
-//                color = ViewAllTextColor
-//            )
-//        ) {
-//            append("Cast : ")
-//        }
-//        withStyle(
-//            style = SpanStyle(
-//                color = TextColor,
-//            )
-//        ) {
-//            castList.sortedBy { it.cast_id }.take(4).forEach { append("${it.name}, ") }
-//        }
-//        withStyle(style = SpanStyle(color = TextColor, textDecoration = TextDecoration.Underline)) {
-//            append("more")
-//        }
-//    }
-    val spannedTextLanguage = buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(
-                color = ViewAllTextColor
-            )
-        ) {
-            append("Original Language : ")
+            append(" • ")
         }
         withStyle(
             style = SpanStyle(
-                color = TextColor,
+                color = BodyColor,
             )
         ) {
-            append(movie.original_language.getLanguageName())
+            val name = StringBuilder()
+            movie.genres.forEach {
+                name.append("${it.name}, ")
+            }
+            append(name.toString().dropLast(2))
+        }
+        withStyle(
+            style = SpanStyle(
+                color = BodyColor,
+                fontWeight = FontWeight.Bold
+            )
+        ) {
+            append(" • ")
+        }
+        withStyle(
+            style = SpanStyle(
+                color = BodyColor,
+                fontWeight = FontWeight.Normal,
+                fontFamily = OpenSans,
+                fontSize = 14.sp
+            )
+        ) {
+            append(movie.release_date.take(4))
         }
     }
     Column(
@@ -286,103 +289,124 @@ fun MovieDescription(
             .fillMaxWidth()
             .padding(horizontal = 10.dp)
     ) {
-        if (movie.media_type == "tv") {
-            Text(
-                color = Color.White,
-                text = movie.name,
-                style = MaterialTheme.typography.h5
-            )
-        } else {
-            Text(
-                color = Color.White,
-                text = movie.title,
-                style = MaterialTheme.typography.h5
-            )
-        }
-        Spacer(modifier = Modifier.height(6.dp))
+        //Title of movie
         Text(
-            text = movie.overview,
-            style = MaterialTheme.typography.body2,
-            color = TextColor
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Text(
-            text = spannedTextLanguage,
-            style = MaterialTheme.typography.body2
+            color = Color.White,
+            text = movie.title,
+            style = MaterialTheme.typography.h1
         )
         Spacer(modifier = Modifier.height(6.dp))
+        //Genre, Duration & Year
         Text(
-            text = spannedTextGenre,
-            style = MaterialTheme.typography.body2
+            text = spannedTextGenre
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(15.dp))
+        //Overview
+        ExpandingText(text=movie.overview)
+        Spacer(modifier = Modifier.height(15.dp))
         Text(
-            text = "Cast : ",
-            style = MaterialTheme.typography.body2,
-            color = ViewAllTextColor
+            text = "Top Cast",
+            style = MaterialTheme.typography.h1,
+            color = Color.White
         )
-//        Spacer(modifier = Modifier.height(20.dp))
-//        Text(
-//            color = Color(0XFFFFFFFF),
-//            text = "Suggested Movies",
-//            style = MaterialTheme.typography.subtitle1,
-//        )
     }
 }
 
 @Composable
+fun ExpandingText(text: String,modifier: Modifier=Modifier) {
+    var isExpanded by remember { mutableStateOf(false) }
+    val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
+    var isClickable by remember { mutableStateOf(false) }
+    var finalText by remember { mutableStateOf(text) }
+
+    val textLayoutResult = textLayoutResultState.value
+    LaunchedEffect(textLayoutResult) {
+        if (textLayoutResult == null) return@LaunchedEffect
+
+        when {
+            isExpanded -> {
+                finalText = "$text Show Less"
+            }
+            !isExpanded && textLayoutResult.hasVisualOverflow -> {
+                val lastCharIndex = textLayoutResult.getLineEnd(3 - 1)
+                val showMoreString = "... Show More"
+                val adjustedText = text
+                    .substring(startIndex = 0, endIndex = lastCharIndex)
+                    .dropLast(showMoreString.length)
+                    .dropLastWhile { it == ' ' || it == '.' }
+
+                finalText = "$adjustedText$showMoreString"
+
+                isClickable = true
+            }
+        }
+    }
+
+    Text(
+        text = finalText,
+        color = BodyColor,
+        style = MaterialTheme.typography.body1,
+        maxLines = if (isExpanded) Int.MAX_VALUE else 3,
+        onTextLayout = { textLayoutResultState.value = it },
+        modifier = modifier
+            .clickable(enabled = isClickable) { isExpanded = !isExpanded }
+            .animateContentSize(),
+    )
+}
+
+@Composable
 fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
-    val trailerState by viewModel.trailer.collectAsState()
-    if (trailerState.data.results.isNotEmpty()) {
-        val context = LocalContext.current
-        val lifecycleOwner = LocalLifecycleOwner.current
-        val youTubePlayerListener = remember {
-            object : AbstractYouTubePlayerListener() {
-                var youTubePlayer: YouTubePlayer? = null
-                    private set
-
-                override fun onReady(youTubePlayer: YouTubePlayer) {
-                    super.onReady(youTubePlayer)
-                    this.youTubePlayer = youTubePlayer
-                    if (trailerState.data.results.isNotEmpty()) {
-                        youTubePlayer.loadVideo(
-                            trailerState.data.results[trailerState.data.results.size - 1].key,
-                            0f
-                        )
-                    }
-                }
-            }
-        }
-
-        val iFramePlayerOptions = IFramePlayerOptions.Builder()
-            .controls(1)    //0 to disable seekbar
-            .build()
-
-        val youTubePlayerView = remember {
-            YouTubePlayerView(context).apply {
-                enableAutomaticInitialization = false
-                initialize(youTubePlayerListener, iFramePlayerOptions)
-            }
-        }
-        AndroidView(
-            modifier = Modifier.fillMaxWidth(),
-            factory = {
-                youTubePlayerView
-            }
-        )
-        DisposableEffect(key1 = youTubePlayerView, key2 = trailerState, effect = {
-            lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
-            if (trailerState.data.results.isNotEmpty()) {
-                youTubePlayerListener.youTubePlayer?.loadVideo(
-                    trailerState.data.results[trailerState.data.results.size - 1].key,
-                    0f
-                )
-            }
-            onDispose {
-                lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
-            }
-        })
-    } else {
+//    val trailerState by viewModel.trailer.collectAsState()
+//    if (trailerState.data.results.isNotEmpty()) {
+//        val context = LocalContext.current
+//        val lifecycleOwner = LocalLifecycleOwner.current
+//        val youTubePlayerListener = remember {
+//            object : AbstractYouTubePlayerListener() {
+//                var youTubePlayer: YouTubePlayer? = null
+//                    private set
+//
+//                override fun onReady(youTubePlayer: YouTubePlayer) {
+//                    super.onReady(youTubePlayer)
+//                    this.youTubePlayer = youTubePlayer
+//                    if (trailerState.data.results.isNotEmpty()) {
+//                        youTubePlayer.loadVideo(
+//                            trailerState.data.results[trailerState.data.results.size - 1].key,
+//                            0f
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//
+//        val iFramePlayerOptions = IFramePlayerOptions.Builder()
+//            .controls(1)    //0 to disable seekbar
+//            .build()
+//
+//        val youTubePlayerView = remember {
+//            YouTubePlayerView(context).apply {
+//                enableAutomaticInitialization = false
+//                initialize(youTubePlayerListener, iFramePlayerOptions)
+//            }
+//        }
+//        AndroidView(
+//            modifier = Modifier.fillMaxWidth(),
+//            factory = {
+//                youTubePlayerView
+//            }
+//        )
+//        DisposableEffect(key1 = youTubePlayerView, key2 = trailerState, effect = {
+//            lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
+//            if (trailerState.data.results.isNotEmpty()) {
+//                youTubePlayerListener.youTubePlayer?.loadVideo(
+//                    trailerState.data.results[trailerState.data.results.size - 1].key,
+//                    0f
+//                )
+//            }
+//            onDispose {
+//                lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
+//            }
+//        })
+//    } else {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(IMAGE_URL + posterPath)
@@ -390,10 +414,12 @@ fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
                 .build(),
             placeholder = painterResource(R.drawable.outline_share_24),
             contentDescription = "dec",
-            contentScale = ContentScale.Crop,
+//            circularRevealedEnabled = true,
+            contentScale = ContentScale.FillHeight,
             modifier = Modifier
+                .height(400.dp)
                 .fillMaxWidth()
         )
-    }
+//    }
 }
 

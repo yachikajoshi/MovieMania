@@ -1,6 +1,7 @@
 package com.yachikajoshi.movielist.domain.use_case
 
 import com.yachikajoshi.movielist.common.Resource
+import com.yachikajoshi.movielist.data.model.MovieDetail
 import com.yachikajoshi.movielist.data.model.MovieTrailer
 import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.domain.repo.MoviesRepository
@@ -47,6 +48,15 @@ class MovieListUseCase @Inject constructor(private val movieRepository: MoviesRe
     suspend fun getTrendingMovies(): Resource<MovieResponse> {
         val response = try {
             movieRepository.getTrendingMovies()
+        } catch (e: Exception) {
+            return Resource.Error("An unknown exception occurred: ${e.message}")
+        }
+        return Resource.Success(response)
+    }
+
+    suspend fun getMovieDetail(movieId: String): Resource<MovieDetail> {
+        val response = try {
+            movieRepository.getMovieDetail(movieId)
         } catch (e: Exception) {
             return Resource.Error("An unknown exception occurred: ${e.message}")
         }

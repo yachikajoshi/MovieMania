@@ -1,6 +1,7 @@
 package com.yachikajoshi.movielist.data.datasource
 
 import com.yachikajoshi.movielist.data.model.CastResponse
+import com.yachikajoshi.movielist.data.model.MovieDetail
 import com.yachikajoshi.movielist.data.model.MovieTrailer
 import com.yachikajoshi.movielist.data.model.MovieResponse
 import retrofit2.http.GET
@@ -23,6 +24,12 @@ interface MovieAPIService {
         @Query("api_key") apiKey: String,
         @Query("page") page: Int
     ): MovieResponse
+
+    @GET("movie/{movieId}")
+    suspend fun getDetail(
+        @Path("movieId") movieId: String,
+        @Query("api_key") apiKey: String
+    ): MovieDetail
 
     @GET("movie/{movieId}/videos")
     suspend fun getTrailer(

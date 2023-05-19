@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yachikajoshi.movielist.common.Resource
 import com.yachikajoshi.movielist.data.model.CastResponse
+import com.yachikajoshi.movielist.data.model.MovieDetail
 import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.data.model.MovieTrailer
 import com.yachikajoshi.movielist.domain.use_case.CastUseCase
@@ -38,6 +39,9 @@ class MoviesViewModel @Inject constructor(
 
     private var _trailer = MutableStateFlow(TrailerState(MovieTrailer()))
     val trailer = _trailer.asStateFlow()
+
+    private var _selectedMovie = MutableStateFlow(MovieDetailState())
+    val selectedMovie = _selectedMovie.asStateFlow()
 
     private var _suggestedMovieState = MutableStateFlow(MovieState())
     val suggestedMovieState = _suggestedMovieState.asStateFlow()
@@ -99,10 +103,10 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
-     fun getCast(movieId: String) {
+    fun getCast(movieId: String) {
         viewModelScope.launch {
             val response = castUseCase.getCast(movieId = movieId)
-            castState=  when (response) {
+            castState = when (response) {
                 is Resource.Error -> {
                     CastState(error = response.message ?: "")
                 }
@@ -140,11 +144,16 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
-    var selectedMovie by mutableStateOf(MovieResponse.Movie())
-        private set
+    fun selectedMovie(movieId: String) {
+        viewModelScope.launch {
+            _selectedMovie.value =
+                when (val response = movieListUseCase.getMovieDetail(movieId = movieId)) {
+                    is Resource.Error -> MovieDetailState(error = response.message ?: "")
+                    is Resource.Loading -> MovieDetailState(isLoading = true)
+                    is Resource.Success -> MovieDetailState(data = response.data!!)
+                }
+        }
 
-    fun selectedMovie(movie: MovieResponse.Movie) {
-        selectedMovie = movie
     }
 
 
@@ -159,6 +168,12 @@ class MoviesViewModel @Inject constructor(
 
 data class MovieState(
     var data: List<MovieResponse.Movie> = emptyList(),
+    var error: String = "",
+    var isLoading: Boolean = false
+)
+
+data class MovieDetailState(
+    var data: MovieDetail? = null,
     var error: String = "",
     var isLoading: Boolean = false
 )

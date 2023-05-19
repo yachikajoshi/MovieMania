@@ -49,6 +49,12 @@ fun List<Int>.getGenreNames(): String {
     return genresString.toString().removePrefix("[").removeSuffix("]")
 }
 
+fun Int.getDuration():String{
+    val hours = this / 60
+    val minutes = this % 60
+    return "${hours}h ${minutes}m"
+}
+
 fun String.getLanguageName(): String {
     val lang = when (this) {
         "en" -> "English"
