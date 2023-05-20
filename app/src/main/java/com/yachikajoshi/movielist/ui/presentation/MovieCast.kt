@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -21,18 +22,6 @@ import com.yachikajoshi.movielist.data.model.CastResponse
 
 @Composable
 fun MovieCast(castList: List<CastResponse.Cast>) {
-//    var name = java.lang.StringBuilder()
-//    castList.sortedBy { it.cast_id }.forEach {
-//        name.append(it.name+", ")
-//    }
-//    Text(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(top = 5.dp),
-//        text = name.toString(),
-//        style = MaterialTheme.typography.caption,
-//        color = Color.White
-//    )
     LazyRow(
         modifier = Modifier
             .fillMaxWidth(),
@@ -49,8 +38,7 @@ fun MovieCast(castList: List<CastResponse.Cast>) {
 fun CastItem(cast: CastResponse.Cast) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.width(70.dp).fillMaxHeight()
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -65,11 +53,12 @@ fun CastItem(cast: CastResponse.Cast) {
         )
         Text(
             modifier = Modifier
-                .width(70.dp)
+                .fillMaxWidth()
                 .padding(top = 5.dp),
             text = cast.name,
-            style = MaterialTheme.typography.caption,
-            color = Color.White
+            style = MaterialTheme.typography.subtitle2,
+            color = Color.White,
+            textAlign = TextAlign.Center
         )
     }
 }

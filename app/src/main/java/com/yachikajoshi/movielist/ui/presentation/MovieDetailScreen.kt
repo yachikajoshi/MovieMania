@@ -95,11 +95,11 @@ fun MovieDetailScreen(
                 movie = selectedMovie
             )
             MovieCast(castList = viewModel.castState.data)
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 color = Color(0XFFFFFFFF),
-                text = "Suggested Movies",
-                style = MaterialTheme.typography.subtitle1,
+                text = "Similar Movies",
+                style = MaterialTheme.typography.h1,
                 modifier = Modifier.padding(start = 10.dp)
             )
             LazyRow(
