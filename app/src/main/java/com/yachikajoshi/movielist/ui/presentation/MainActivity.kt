@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.collectAsState
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -34,7 +35,7 @@ class MainActivity : ComponentActivity() {
                             modelStateOfTopMovies = viewModel.topRatedMovieState,
                             modelStateOfUpcomingMovies = viewModel.upcomingMovieList,
                             onMovieClicked = { selectedMovie ->
-                                viewModel.selectedMovie(movie = selectedMovie)
+                                viewModel.selectedMovie(movieId = selectedMovie.id)
                                 viewModel.getTrailer(movieId = selectedMovie.id)
                                 viewModel.getSuggestedMovies(selectedMovie.id)
                                 navController.navigate(Screen.MovieDetail.route)
@@ -73,7 +74,7 @@ class MainActivity : ComponentActivity() {
                         SeeMoreItem(
                             movies = movies,
                             onMovieClicked = { selectedMovie ->
-                                viewModel.selectedMovie(movie = selectedMovie)
+                                viewModel.selectedMovie(movieId = selectedMovie.id)
                                 viewModel.getTrailer(movieId = selectedMovie.id)
                                 viewModel.getSuggestedMovies(selectedMovie.id)
                                 navController.navigate(Screen.MovieDetail.route)
@@ -85,14 +86,16 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = Screen.MovieDetail.route,
                     ) { entry ->
-                        val selectedMovie = viewModel.selectedMovie
-                        MovieDetailScreen(
-                            viewModel = viewModel,
-                            selected = selectedMovie,
-                            onBackPressed = {
-                                navController.navigateUp()
-                            }
-                        )
+                        val selectedMovie = viewModel.selectedMovie.collectAsState().value.data
+                        selectedMovie?.let {
+                            MovieDetailScreen(
+                                viewModel = viewModel,
+                                selected = it,
+                                onBackPressed = {
+                                    navController.navigateUp()
+                                }
+                            )
+                        }
                     }
                 }
             }
