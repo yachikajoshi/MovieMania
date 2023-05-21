@@ -1,10 +1,12 @@
 package com.yachikajoshi.movielist.ui.presentation
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,11 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,10 +27,7 @@ import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
 import com.yachikajoshi.movielist.common.getDuration
 import com.yachikajoshi.movielist.data.model.MovieDetail
-import com.yachikajoshi.movielist.ui.theme.Background
-import com.yachikajoshi.movielist.ui.theme.BodyColor
-import com.yachikajoshi.movielist.ui.theme.IconColorOnDarkScreen
-import com.yachikajoshi.movielist.ui.theme.OpenSans
+import com.yachikajoshi.movielist.ui.theme.*
 
 
 @Composable
@@ -99,7 +95,7 @@ fun MovieDetailScreen(
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                items(viewModel.suggestedMovieState.value.data.filter {data-> data.poster_path != null }) { movie ->
+                items(viewModel.suggestedMovieState.value.data.filter { data -> data.poster_path != null }) { movie ->
                     MovieItems(movie = movie,
                         Modifier.clickable {
                             viewModel.selectedMovie(movie.id)
@@ -361,41 +357,53 @@ fun ExpandingText(text: String, modifier: Modifier = Modifier) {
     var isExpanded by remember { mutableStateOf(false) }
     val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
     var isClickable by remember { mutableStateOf(false) }
-    var finalText by remember { mutableStateOf(text) }
+    var finalText by remember {
+        mutableStateOf(text)
+    }
 
     val textLayoutResult = textLayoutResultState.value
+
+
     LaunchedEffect(textLayoutResult) {
         if (textLayoutResult == null) return@LaunchedEffect
-
         when {
             isExpanded -> {
                 finalText = "$text Show Less"
             }
-            !isExpanded && textLayoutResult.hasVisualOverflow -> {
+            textLayoutResult.hasVisualOverflow -> {
                 val lastCharIndex = textLayoutResult.getLineEnd(3 - 1)
                 val showMoreString = "... Show More"
                 val adjustedText = text
                     .substring(startIndex = 0, endIndex = lastCharIndex)
                     .dropLast(showMoreString.length)
                     .dropLastWhile { it == ' ' || it == '.' }
-
                 finalText = "$adjustedText$showMoreString"
-
                 isClickable = true
             }
         }
     }
-
-    Text(
-        text = finalText,
-        color = BodyColor,
-        style = MaterialTheme.typography.body1,
-        maxLines = if (isExpanded) Int.MAX_VALUE else 3,
-        onTextLayout = { textLayoutResultState.value = it },
-        modifier = modifier
-            .clickable(enabled = isClickable) { isExpanded = !isExpanded }
-            .animateContentSize(),
-    )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize()
+    ) {
+        Text(
+            text = finalText.dropLast(9),
+            color = BodyColor,
+            style = MaterialTheme.typography.body1,
+            maxLines = if (isExpanded) Int.MAX_VALUE else 3,
+            onTextLayout = { textLayoutResultState.value = it },
+        )
+        Text(
+            text = if (isExpanded) "Show Less" else "Show More",
+            color = ReadColor,
+            style = MaterialTheme.typography.body1,
+            modifier = modifier
+                .clickable(enabled = isClickable) { isExpanded = !isExpanded }
+                .align(Alignment.BottomEnd)
+                .animateContentSize(),
+        )
+    }
 }
 
 @Composable
