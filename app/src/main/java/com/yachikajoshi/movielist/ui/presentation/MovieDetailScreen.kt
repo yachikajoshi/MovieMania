@@ -46,10 +46,10 @@ fun MovieDetailScreen(
     val scrollState = rememberScrollState()
 
     LaunchedEffect(key1 = viewModel.selectedMovie) {
-        scrollState.animateScrollTo(0)
         viewModel.selectedMovie.collect { movieDetailState ->
             movieDetailState.data?.let { movieDetail ->
                 selectedMovie = movieDetail
+                scrollState.animateScrollTo(0)
                 viewModel.getCast(selectedMovie.id.toString())
             }
         }
@@ -99,11 +99,10 @@ fun MovieDetailScreen(
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                items(viewModel.suggestedMovieState.value.data) { movie ->
+                items(viewModel.suggestedMovieState.value.data.filter {data-> data.poster_path != null }) { movie ->
                     MovieItems(movie = movie,
                         Modifier.clickable {
                             viewModel.selectedMovie(movie.id)
-//                            selectedMovie = viewModel.selectedMovie.value.data!!
                         })
                 }
             }
