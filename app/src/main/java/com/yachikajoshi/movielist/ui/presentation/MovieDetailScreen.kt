@@ -204,7 +204,7 @@ fun MovieHeader(
                     Text(
                         text = " Trailer",
                         style = MaterialTheme.typography.body1,
-                        color = IconColorOnDarkScreen
+                        color = Color.White
                     )
                 }
                 Row(
