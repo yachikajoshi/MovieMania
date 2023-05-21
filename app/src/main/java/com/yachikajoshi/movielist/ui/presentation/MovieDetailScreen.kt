@@ -344,7 +344,7 @@ fun MovieDescription(
         )
         Spacer(modifier = Modifier.height(15.dp))
         //Overview
-        ExpandingText(text = movie.overview)
+        ExpandingText(text=movie.overview)
         Spacer(modifier = Modifier.height(15.dp))
         Text(
             text = "Top Cast",
@@ -355,7 +355,7 @@ fun MovieDescription(
 }
 
 @Composable
-fun ExpandingText(text: String, modifier: Modifier = Modifier) {
+fun ExpandingText(text: String,modifier: Modifier=Modifier) {
     var isExpanded by remember { mutableStateOf(false) }
     val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
     var isClickable by remember { mutableStateOf(false) }
