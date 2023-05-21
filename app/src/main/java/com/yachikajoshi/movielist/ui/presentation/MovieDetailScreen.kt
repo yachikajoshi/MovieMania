@@ -44,17 +44,21 @@ fun MovieDetailScreen(
     var selectedMovie by remember { mutableStateOf(selected) }
     val bookmarks = remember { mutableStateListOf<MovieDetail>() }
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(key1 = viewModel.selectedMovie) {
+        scrollState.animateScrollTo(0)
+        viewModel.selectedMovie.collect { movieDetailState ->
+            movieDetailState.data?.let { movieDetail ->
+                selectedMovie = movieDetail
+                viewModel.getCast(selectedMovie.id.toString())
+            }
+        }
+    }
     val isBookmarked by remember {
         derivedStateOf {
             bookmarks.contains(selectedMovie)
         }
     }
-
-    LaunchedEffect(key1 = selectedMovie) {
-        scrollState.animateScrollTo(0)
-        viewModel.getCast(selectedMovie.id.toString())
-    }
-
     Scaffold() {
         Column(
             modifier = Modifier
@@ -99,8 +103,7 @@ fun MovieDetailScreen(
                     MovieItems(movie = movie,
                         Modifier.clickable {
                             viewModel.selectedMovie(movie.id)
-                            selectedMovie = viewModel.selectedMovie.value.data!!
-//                            viewModel.getTrailer(movieId = movie.id)
+//                            selectedMovie = viewModel.selectedMovie.value.data!!
                         })
                 }
             }
