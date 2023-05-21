@@ -1,50 +1,37 @@
 package com.yachikajoshi.movielist.ui.presentation
 
-import android.text.SpannableString
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
 import com.yachikajoshi.movielist.common.getDuration
-import com.yachikajoshi.movielist.common.getGenreNames
-import com.yachikajoshi.movielist.common.getLanguageName
-import com.yachikajoshi.movielist.data.model.CastResponse
 import com.yachikajoshi.movielist.data.model.MovieDetail
-import com.yachikajoshi.movielist.data.model.MovieResponse
-import com.yachikajoshi.movielist.ui.theme.*
-import java.lang.StringBuilder
+import com.yachikajoshi.movielist.ui.theme.Background
+import com.yachikajoshi.movielist.ui.theme.BodyColor
+import com.yachikajoshi.movielist.ui.theme.IconColorOnDarkScreen
+import com.yachikajoshi.movielist.ui.theme.OpenSans
 
 
 @Composable
@@ -186,6 +173,89 @@ fun MovieHeader(
         Modifier
             .fillMaxSize()
     ) {
+        Box {
+            ExoPlayerView(viewModel = viewModel, movie.poster_path)
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Background,
+                            ),
+                            startY = 0.0f,
+                            endY = 1360f
+                        )
+                    )
+            )
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.play),
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Text(
+                        text = " Trailer",
+                        style = MaterialTheme.typography.body1,
+                        color = IconColorOnDarkScreen
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+//                        .align(Alignment.BottomStart)
+                        .padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.round_star_rate_24),
+                        contentDescription = null, modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 2.dp),
+                        text = movie.vote_average.toString().take(3),
+                        style = MaterialTheme.typography.h5,
+                        color = Color.White
+                    )
+                    Text(
+                        text = " | ${movie.vote_count}",
+                        style = MaterialTheme.typography.caption,
+                        color = IconColorOnDarkScreen
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.outline_share_24
+                        ),
+                        contentDescription = null,
+                        tint = IconColorOnDarkScreen,
+                        modifier = Modifier
+                            .padding(end = 10.dp)
+                            .size(20.dp)
+                    )
+
+                    Icon(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable { onBookmarkChanged() },
+                        painter = if (isBookmarked) painterResource(id = R.drawable.baseline_bookmark_24) else painterResource(
+                            id = R.drawable.outline_bookmark_border_24
+                        ),
+                        contentDescription = null,
+                        tint = IconColorOnDarkScreen
+                    )
+                }
+            }
+
+        }
+
         TopAppBar(
             elevation = 0.dp,
             modifier = modifier,
@@ -198,36 +268,8 @@ fun MovieHeader(
                     )
                 }
             },
-            backgroundColor = Color.Transparent,
-            actions = {
-                Row() {
-                    IconButton(
-                        onClick = onBookmarkChanged
-                    ) {
-                        Icon(
-                            painter = painterResource(
-                                id = R.drawable.outline_share_24
-                            ),
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                    IconButton(
-                        onClick = onBookmarkChanged
-                    ) {
-                        Icon(
-                            painter = if (isBookmarked) painterResource(id = R.drawable.baseline_bookmark_24) else painterResource(
-                                id = R.drawable.outline_bookmark_border_24
-                            ),
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                }
-            }
+            backgroundColor = Color.Transparent
         )
-        ExoPlayerView(viewModel = viewModel, movie.backdrop_path)
-
     }
 
 }
@@ -302,7 +344,7 @@ fun MovieDescription(
         )
         Spacer(modifier = Modifier.height(15.dp))
         //Overview
-        ExpandingText(text=movie.overview)
+        ExpandingText(text = movie.overview)
         Spacer(modifier = Modifier.height(15.dp))
         Text(
             text = "Top Cast",
@@ -313,7 +355,7 @@ fun MovieDescription(
 }
 
 @Composable
-fun ExpandingText(text: String,modifier: Modifier=Modifier) {
+fun ExpandingText(text: String, modifier: Modifier = Modifier) {
     var isExpanded by remember { mutableStateOf(false) }
     val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
     var isClickable by remember { mutableStateOf(false) }
@@ -407,19 +449,19 @@ fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
 //            }
 //        })
 //    } else {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(IMAGE_URL + posterPath)
-                .crossfade(true)
-                .build(),
-            placeholder = painterResource(R.drawable.outline_share_24),
-            contentDescription = "dec",
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(IMAGE_URL + posterPath)
+            .crossfade(true)
+            .build(),
+        placeholder = painterResource(R.drawable.outline_share_24),
+        contentDescription = "dec",
 //            circularRevealedEnabled = true,
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier
-                .height(400.dp)
-                .fillMaxWidth()
-        )
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(0.798f)
+    )
 //    }
 }
 
