@@ -1,5 +1,7 @@
 package com.yachikajoshi.movielist.ui.presentation
 
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
@@ -37,6 +39,7 @@ fun MovieDetailScreen(
     viewModel: MoviesViewModel
 ) {
 
+    val context = LocalContext.current
     var selectedMovie by remember { mutableStateOf(selected) }
     val bookmarks = remember { mutableStateListOf<MovieDetail>() }
     val scrollState = rememberScrollState()
@@ -76,6 +79,15 @@ fun MovieDetailScreen(
                 },
                 onBackPressed = {
                     onBackPressed()
+                },
+                onPlayTrailer = {
+                    val trailer = viewModel.trailer.value.data.results.find { it.type == "Trailer" }
+                    val appIntent =
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("vnd.youtube:${trailer!!.key}")
+                        )
+                    context.startActivity(appIntent)
                 })
             Spacer(modifier = Modifier.height(16.dp))
             MovieDescription(
@@ -99,6 +111,7 @@ fun MovieDetailScreen(
                     MovieItems(movie = movie,
                         Modifier.clickable {
                             viewModel.selectedMovie(movie.id)
+                            viewModel.getTrailer(movie.id)
                         })
                 }
             }
@@ -165,7 +178,8 @@ fun MovieHeader(
     movie: MovieDetail,
     isBookmarked: Boolean,
     onBookmarkChanged: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onPlayTrailer: () -> Unit
 ) {
     Box(
         Modifier
@@ -197,7 +211,11 @@ fun MovieHeader(
                     Image(
                         painter = painterResource(id = R.drawable.play),
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable {
+                                onPlayTrailer()
+                            }
                     )
                     Text(
                         text = " Trailer",
