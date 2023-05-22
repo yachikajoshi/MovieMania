@@ -172,7 +172,7 @@ fun MovieHeader(
             .fillMaxSize()
     ) {
         Box {
-            ExoPlayerView(viewModel = viewModel, movie.poster_path)
+            ExoPlayerView(posterPath = movie.poster_path)
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -407,58 +407,7 @@ fun ExpandingText(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
-//    val trailerState by viewModel.trailer.collectAsState()
-//    if (trailerState.data.results.isNotEmpty()) {
-//        val context = LocalContext.current
-//        val lifecycleOwner = LocalLifecycleOwner.current
-//        val youTubePlayerListener = remember {
-//            object : AbstractYouTubePlayerListener() {
-//                var youTubePlayer: YouTubePlayer? = null
-//                    private set
-//
-//                override fun onReady(youTubePlayer: YouTubePlayer) {
-//                    super.onReady(youTubePlayer)
-//                    this.youTubePlayer = youTubePlayer
-//                    if (trailerState.data.results.isNotEmpty()) {
-//                        youTubePlayer.loadVideo(
-//                            trailerState.data.results[trailerState.data.results.size - 1].key,
-//                            0f
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//
-//        val iFramePlayerOptions = IFramePlayerOptions.Builder()
-//            .controls(1)    //0 to disable seekbar
-//            .build()
-//
-//        val youTubePlayerView = remember {
-//            YouTubePlayerView(context).apply {
-//                enableAutomaticInitialization = false
-//                initialize(youTubePlayerListener, iFramePlayerOptions)
-//            }
-//        }
-//        AndroidView(
-//            modifier = Modifier.fillMaxWidth(),
-//            factory = {
-//                youTubePlayerView
-//            }
-//        )
-//        DisposableEffect(key1 = youTubePlayerView, key2 = trailerState, effect = {
-//            lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
-//            if (trailerState.data.results.isNotEmpty()) {
-//                youTubePlayerListener.youTubePlayer?.loadVideo(
-//                    trailerState.data.results[trailerState.data.results.size - 1].key,
-//                    0f
-//                )
-//            }
-//            onDispose {
-//                lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
-//            }
-//        })
-//    } else {
+fun ExoPlayerView(posterPath: String) {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(IMAGE_URL + posterPath)
@@ -466,12 +415,10 @@ fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
             .build(),
         placeholder = painterResource(R.drawable.outline_share_24),
         contentDescription = "dec",
-//            circularRevealedEnabled = true,
         contentScale = ContentScale.Crop,
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(0.798f)
     )
-//    }
 }
 
