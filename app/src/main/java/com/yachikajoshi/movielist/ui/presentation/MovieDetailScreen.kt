@@ -2,13 +2,11 @@ package com.yachikajoshi.movielist.ui.presentation
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -89,7 +87,6 @@ fun MovieDetailScreen(
                         )
                     context.startActivity(appIntent)
                 })
-            Spacer(modifier = Modifier.height(16.dp))
             MovieDescription(
                 movie = selectedMovie
             )
@@ -197,79 +194,17 @@ fun MovieHeader(
                                 Background,
                             ),
                             startY = 0.0f,
-                            endY = 1360f
+                            endY = 1560f
                         )
                     )
             )
-            Box(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.play),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clickable {
-                                onPlayTrailer()
-                            }
-                    )
-                    Text(
-                        text = " Trailer",
-                        style = MaterialTheme.typography.body1,
-                        color = Color.White
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-//                        .align(Alignment.BottomStart)
-                        .padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.round_star_rate_24),
-                        contentDescription = null, modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        modifier = Modifier.padding(start = 2.dp),
-                        text = movie.vote_average.toString().take(3),
-                        style = MaterialTheme.typography.h5,
-                        color = Color.White
-                    )
-                    Text(
-                        text = " | ${movie.vote_count}",
-                        style = MaterialTheme.typography.caption,
-                        color = IconColorOnDarkScreen
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.outline_share_24
-                        ),
-                        contentDescription = null,
-                        tint = IconColorOnDarkScreen,
-                        modifier = Modifier
-                            .padding(end = 10.dp)
-                            .size(20.dp)
-                    )
-
-                    Icon(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable { onBookmarkChanged() },
-                        painter = if (isBookmarked) painterResource(id = R.drawable.baseline_bookmark_24) else painterResource(
-                            id = R.drawable.outline_bookmark_border_24
-                        ),
-                        contentDescription = null,
-                        tint = IconColorOnDarkScreen
-                    )
-                }
-            }
-
+            PlayTrailer(
+                onPlayTrailer,
+                movie,
+                onBookmarkChanged,
+                isBookmarked,
+                Modifier.align(Alignment.BottomCenter)
+            )
         }
 
         TopAppBar(
@@ -288,6 +223,84 @@ fun MovieHeader(
         )
     }
 
+}
+
+@Composable
+fun PlayTrailer(
+    onPlayTrailer: () -> Unit,
+    movie: MovieDetail,
+    onBookmarkChanged: () -> Unit,
+    isBookmarked: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.padding(bottom = 20.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.play),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable {
+                        onPlayTrailer()
+                    }
+            )
+            Text(
+                text = " Trailer",
+                style = MaterialTheme.typography.body1,
+                color = Color.White
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+//                        .align(Alignment.BottomStart)
+                .padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.round_star_rate_24),
+                contentDescription = null, modifier = Modifier.size(16.dp)
+            )
+            Text(
+                modifier = Modifier.padding(start = 2.dp),
+                text = movie.vote_average.toString().take(3),
+                style = MaterialTheme.typography.h5,
+                color = Color.White
+            )
+            Text(
+                text = " | ${movie.vote_count}",
+                style = MaterialTheme.typography.caption,
+                color = IconColorOnDarkScreen
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.outline_share_24
+                ),
+                contentDescription = null,
+                tint = IconColorOnDarkScreen,
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(20.dp)
+            )
+
+            Icon(
+                modifier = Modifier
+                    .size(20.dp)
+                    .clickable { onBookmarkChanged() },
+                painter = if (isBookmarked) painterResource(id = R.drawable.baseline_bookmark_24) else painterResource(
+                    id = R.drawable.outline_bookmark_border_24
+                ),
+                contentDescription = null,
+                tint = IconColorOnDarkScreen
+            )
+        }
+    }
 }
 
 @Composable
@@ -433,10 +446,10 @@ fun ExoPlayerView(posterPath: String) {
             .build(),
         placeholder = painterResource(R.drawable.outline_share_24),
         contentDescription = "dec",
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.FillBounds,
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.798f)
+            .aspectRatio(0.68f)
     )
 }
 
