@@ -11,8 +11,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,15 +28,15 @@ import com.yachikajoshi.movielist.ui.theme.BottomAppBarColor
 import com.yachikajoshi.movielist.ui.theme.TextColor
 
 @Composable
-fun Search(onBackPressed: () -> Unit, searchViewModel: AllMoviesViewModel) {
-    var state by remember {
-        mutableStateOf("")
-    }
-
+fun Search(
+    onBackPressed: () -> Unit,
+    searchViewModel: AllMoviesViewModel,
+    onMovieClicked: (MovieResponse.Movie) -> Unit
+) {
     val search by searchViewModel.search.collectAsStateWithLifecycle()
     val products: LazyPagingItems<MovieResponse.Movie> =
         searchViewModel.searchMovie.collectAsLazyPagingItems()
-
+    val focusController = LocalFocusManager.current
 
     Column(
         modifier = Modifier
@@ -64,6 +67,7 @@ fun Search(onBackPressed: () -> Unit, searchViewModel: AllMoviesViewModel) {
                         .size(24.dp)
                         .clickable {
                             searchViewModel.setSearch("")
+                            focusController.clearFocus()
                             onBackPressed()
                         }
                 )
@@ -110,7 +114,8 @@ fun Search(onBackPressed: () -> Unit, searchViewModel: AllMoviesViewModel) {
                 MovieItems(
                     movie = products[index]!!,
                     modifier = Modifier.clickable {
-//                        onMovieClicked(movies[index]!!)
+                        focusController.clearFocus()
+                        onMovieClicked(products[index]!!)
                     })
             }
         }

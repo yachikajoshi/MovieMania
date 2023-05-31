@@ -52,7 +52,13 @@ class MainActivity : ComponentActivity() {
                             searchViewModel = allMoviesViewModel,
                             onBackPressed = {
                                 navController.navigateUp()
-                            })
+                            },
+                        onMovieClicked = {selectedMovie->
+
+                            viewModel.selectedMovie(movieId = selectedMovie.id)
+                            viewModel.getSuggestedMovies(selectedMovie.id)
+                            navController.navigate(Screen.MovieDetail.route)
+                        })
                     }
                     composable(
                         route = Screen.SeeMore.route + "/{see_more}",
