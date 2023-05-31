@@ -75,7 +75,6 @@ class MainActivity : ComponentActivity() {
                             movies = movies,
                             onMovieClicked = { selectedMovie ->
                                 viewModel.selectedMovie(movieId = selectedMovie.id)
-                                viewModel.getTrailer(movieId = selectedMovie.id)
                                 viewModel.getSuggestedMovies(selectedMovie.id)
                                 navController.navigate(Screen.MovieDetail.route)
                             }

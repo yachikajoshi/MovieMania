@@ -394,7 +394,6 @@ fun ExpandingText(text: String, modifier: Modifier = Modifier) {
 
     val textLayoutResult = textLayoutResultState.value
 
-
     LaunchedEffect(textLayoutResult) {
         if (textLayoutResult == null) return@LaunchedEffect
         when {
@@ -444,7 +443,6 @@ fun ExoPlayerView(posterPath: String) {
             .data(IMAGE_URL + posterPath)
             .crossfade(true)
             .build(),
-        placeholder = painterResource(R.drawable.outline_share_24),
         contentDescription = "dec",
         contentScale = ContentScale.FillBounds,
         modifier = Modifier
