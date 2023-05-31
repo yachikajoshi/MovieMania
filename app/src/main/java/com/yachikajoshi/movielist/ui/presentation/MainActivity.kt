@@ -48,9 +48,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(route = Screen.Search.route) {
-                        Search(onBackPressed = {
-                            navController.navigateUp()
-                        })
+                        Search(
+                            searchViewModel = allMoviesViewModel,
+                            onBackPressed = {
+                                navController.navigateUp()
+                            })
                     }
                     composable(
                         route = Screen.SeeMore.route + "/{see_more}",

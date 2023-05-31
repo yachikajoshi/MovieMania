@@ -26,4 +26,6 @@ interface MoviesRepository {
     suspend fun getAllTopRatedMovies(page: Int): MovieResponse
     suspend fun getCast(movieId: String): CastResponse
 
+    suspend fun searchMovie(query: String, page: Int): MovieResponse
+
 }
