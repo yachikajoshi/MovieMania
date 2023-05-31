@@ -4,5 +4,5 @@ data class MovieTrailer(
     val id: String = "",
     val results: List<Trailer> = emptyList()
 ) {
-    data class Trailer(val name: String, val key: String)
+    data class Trailer(val name: String, val key: String,val type:String)
 }

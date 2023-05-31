@@ -15,17 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.shimmerEffect
 import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.ui.theme.BottomAppBarColor
-import com.yachikajoshi.movielist.ui.theme.ViewAllTextColor
+import com.yachikajoshi.movielist.ui.theme.ReadColor
+import com.yachikajoshi.movielist.ui.theme.TextColor
 
 @Composable
 fun Dashboard(
@@ -73,7 +71,8 @@ fun MainContent(
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            LatestMovies(modelStateOfUpcomingMovies)
+            Spacer(modifier = Modifier.padding(30.dp))
+            ScrollImage(modelStateOfUpcomingMovies)
             TrendingMovies(modelStateOfTrendingMovies, onMovieClicked, onClickTrendingSeeMore)
             Spacer(modifier = Modifier.padding(10.dp))
             TopRatedMovies(modelStateOfTopMovies, onMovieClicked, onClickTopRatedSeeMore)
@@ -125,14 +124,16 @@ fun TopRatedMovies(
             text = "Top Rated",
             modifier = Modifier
                 .padding(horizontal = 10.dp),
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.h5,
+            color= ReadColor
         )
         Text(
             text = "See more",
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .clickable { onClickTopRatedSeeMore() },
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.body2,
+            color = ReadColor
         )
     }
     LazyRow(
@@ -176,14 +177,16 @@ fun TrendingMovies(
             text = "Trending",
             modifier = Modifier
                 .padding(horizontal = 10.dp),
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.h5,
+            color =ReadColor
         )
         Text(
             text = "See more",
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .clickable { onSeeMoreClicked() },
-            style = MaterialTheme.typography.body1
+            style = MaterialTheme.typography.body1,
+            color = ReadColor
         )
     }
     LazyRow(

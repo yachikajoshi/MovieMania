@@ -1,44 +1,52 @@
 package com.yachikajoshi.movielist.ui.presentation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yachikajoshi.movielist.R
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.yachikajoshi.movielist.data.model.MovieResponse
 import com.yachikajoshi.movielist.ui.theme.Background
 import com.yachikajoshi.movielist.ui.theme.BottomAppBarColor
 import com.yachikajoshi.movielist.ui.theme.TextColor
 
 @Composable
-fun Search(onBackPressed: () -> Unit) {
-    var state by remember {
-        mutableStateOf("")
-    }
+fun Search(
+    onBackPressed: () -> Unit,
+    searchViewModel: AllMoviesViewModel,
+    onMovieClicked: (MovieResponse.Movie) -> Unit
+) {
+    val search by searchViewModel.search.collectAsStateWithLifecycle()
+    val products: LazyPagingItems<MovieResponse.Movie> =
+        searchViewModel.searchMovie.collectAsLazyPagingItems()
+    val focusController = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Background)
     ) {
         TextField(
-            value = state,
+            value = search,
             onValueChange = { value ->
-                state = value
+                searchViewModel.setSearch(value)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -57,14 +65,18 @@ fun Search(onBackPressed: () -> Unit) {
                     modifier = Modifier
                         .padding(15.dp)
                         .size(24.dp)
-                        .clickable { onBackPressed() }
+                        .clickable {
+                            searchViewModel.setSearch("")
+                            focusController.clearFocus()
+                            onBackPressed()
+                        }
                 )
             },
             trailingIcon = {
-                if (state.isNotEmpty()) {
+                if (search.isNotEmpty()) {
                     IconButton(
                         onClick = {
-                            state = ""// Remove text from TextField when you press the 'X' icon
+                            searchViewModel.setSearch("")// Remove text from TextField when you press the 'X' icon
                         }
                     ) {
                         Icon(
@@ -90,5 +102,22 @@ fun Search(onBackPressed: () -> Unit) {
                 disabledIndicatorColor = Color.Transparent
             )
         )
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(100.dp),
+            contentPadding = PaddingValues(
+                horizontal = 10.dp, vertical = 10.dp
+            ),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            items(products.itemCount) { index ->
+                MovieItems(
+                    movie = products[index]!!,
+                    modifier = Modifier.clickable {
+                        focusController.clearFocus()
+                        onMovieClicked(products[index]!!)
+                    })
+            }
+        }
     }
 }

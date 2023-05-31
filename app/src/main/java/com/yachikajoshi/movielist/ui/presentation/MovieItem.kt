@@ -25,9 +25,8 @@ fun MovieItems(movie: MovieResponse.Movie, modifier: Modifier = Modifier) {
             .data(Constants.IMAGE_URL + movie.poster_path)
             .crossfade(true)
             .build(),
-        placeholder = painterResource(R.drawable.outline_share_24),
         contentDescription = "dec",
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.FillBounds,
         modifier = modifier
             .height(180.dp)
             .width(132.dp)

@@ -48,8 +48,16 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(route = Screen.Search.route) {
-                        Search(onBackPressed = {
-                            navController.navigateUp()
+                        Search(
+                            searchViewModel = allMoviesViewModel,
+                            onBackPressed = {
+                                navController.navigateUp()
+                            },
+                        onMovieClicked = {selectedMovie->
+
+                            viewModel.selectedMovie(movieId = selectedMovie.id)
+                            viewModel.getSuggestedMovies(selectedMovie.id)
+                            navController.navigate(Screen.MovieDetail.route)
                         })
                     }
                     composable(
@@ -75,7 +83,6 @@ class MainActivity : ComponentActivity() {
                             movies = movies,
                             onMovieClicked = { selectedMovie ->
                                 viewModel.selectedMovie(movieId = selectedMovie.id)
-                                viewModel.getTrailer(movieId = selectedMovie.id)
                                 viewModel.getSuggestedMovies(selectedMovie.id)
                                 navController.navigate(Screen.MovieDetail.route)
                             }

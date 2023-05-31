@@ -37,10 +37,8 @@ class GetMoviesImpl(private val movieAPIService: MovieAPIService) : MoviesReposi
     override suspend fun getSuggestedMovies(movieId: String): MovieResponse =
         movieAPIService.getSuggestedMovies(movieId = movieId, apiKey = API_KEY)
 
-    override suspend fun getAllTrendingMovies(page: Int): MovieResponse {
-        delay(2000L)
-        return movieAPIService.getTrending(apiKey = API_KEY, page = page)
-    }
+    override suspend fun getAllTrendingMovies(page: Int): MovieResponse =
+        movieAPIService.getTrending(apiKey = API_KEY, page = page)
 
 
     override suspend fun getAllTopRatedMovies(page: Int): MovieResponse =
@@ -49,4 +47,6 @@ class GetMoviesImpl(private val movieAPIService: MovieAPIService) : MoviesReposi
     override suspend fun getCast(movieId: String): CastResponse =
         movieAPIService.movieCast(movieId = movieId, apiKey = API_KEY)
 
+    override suspend fun searchMovie(query: String, page: Int): MovieResponse =
+        movieAPIService.searchMovie(query = query, apiKey = API_KEY, page = page)
 }

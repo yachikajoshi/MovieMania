@@ -1,5 +1,7 @@
 package com.yachikajoshi.movielist.ui.presentation
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -14,11 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,10 +27,7 @@ import com.yachikajoshi.movielist.R
 import com.yachikajoshi.movielist.common.Constants.IMAGE_URL
 import com.yachikajoshi.movielist.common.getDuration
 import com.yachikajoshi.movielist.data.model.MovieDetail
-import com.yachikajoshi.movielist.ui.theme.Background
-import com.yachikajoshi.movielist.ui.theme.BodyColor
-import com.yachikajoshi.movielist.ui.theme.IconColorOnDarkScreen
-import com.yachikajoshi.movielist.ui.theme.OpenSans
+import com.yachikajoshi.movielist.ui.theme.*
 
 
 @Composable
@@ -41,15 +37,16 @@ fun MovieDetailScreen(
     viewModel: MoviesViewModel
 ) {
 
+    val context = LocalContext.current
     var selectedMovie by remember { mutableStateOf(selected) }
     val bookmarks = remember { mutableStateListOf<MovieDetail>() }
     val scrollState = rememberScrollState()
 
     LaunchedEffect(key1 = viewModel.selectedMovie) {
-        scrollState.animateScrollTo(0)
         viewModel.selectedMovie.collect { movieDetailState ->
             movieDetailState.data?.let { movieDetail ->
                 selectedMovie = movieDetail
+                scrollState.animateScrollTo(0)
                 viewModel.getCast(selectedMovie.id.toString())
             }
         }
@@ -80,8 +77,16 @@ fun MovieDetailScreen(
                 },
                 onBackPressed = {
                     onBackPressed()
+                },
+                onPlayTrailer = {
+                    val trailer = viewModel.trailer.value.data.results.find { it.type == "Trailer" }
+                    val appIntent =
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("vnd.youtube:${trailer!!.key}")
+                        )
+                    context.startActivity(appIntent)
                 })
-            Spacer(modifier = Modifier.height(16.dp))
             MovieDescription(
                 movie = selectedMovie
             )
@@ -99,11 +104,11 @@ fun MovieDetailScreen(
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                items(viewModel.suggestedMovieState.value.data) { movie ->
+                items(viewModel.suggestedMovieState.value.data.filter { data -> data.poster_path != null }) { movie ->
                     MovieItems(movie = movie,
                         Modifier.clickable {
                             viewModel.selectedMovie(movie.id)
-//                            selectedMovie = viewModel.selectedMovie.value.data!!
+                            viewModel.getTrailer(movie.id)
                         })
                 }
             }
@@ -170,14 +175,15 @@ fun MovieHeader(
     movie: MovieDetail,
     isBookmarked: Boolean,
     onBookmarkChanged: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onPlayTrailer: () -> Unit
 ) {
     Box(
         Modifier
             .fillMaxSize()
     ) {
         Box {
-            ExoPlayerView(viewModel = viewModel, movie.poster_path)
+            ExoPlayerView(posterPath = movie.poster_path)
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -188,75 +194,17 @@ fun MovieHeader(
                                 Background,
                             ),
                             startY = 0.0f,
-                            endY = 1360f
+                            endY = 1560f
                         )
                     )
             )
-            Box(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.play),
-                        contentDescription = null,
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Text(
-                        text = " Trailer",
-                        style = MaterialTheme.typography.body1,
-                        color = Color.White
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-//                        .align(Alignment.BottomStart)
-                        .padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.round_star_rate_24),
-                        contentDescription = null, modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        modifier = Modifier.padding(start = 2.dp),
-                        text = movie.vote_average.toString().take(3),
-                        style = MaterialTheme.typography.h5,
-                        color = Color.White
-                    )
-                    Text(
-                        text = " | ${movie.vote_count}",
-                        style = MaterialTheme.typography.caption,
-                        color = IconColorOnDarkScreen
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.outline_share_24
-                        ),
-                        contentDescription = null,
-                        tint = IconColorOnDarkScreen,
-                        modifier = Modifier
-                            .padding(end = 10.dp)
-                            .size(20.dp)
-                    )
-
-                    Icon(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable { onBookmarkChanged() },
-                        painter = if (isBookmarked) painterResource(id = R.drawable.baseline_bookmark_24) else painterResource(
-                            id = R.drawable.outline_bookmark_border_24
-                        ),
-                        contentDescription = null,
-                        tint = IconColorOnDarkScreen
-                    )
-                }
-            }
-
+            PlayTrailer(
+                onPlayTrailer,
+                movie,
+                onBookmarkChanged,
+                isBookmarked,
+                Modifier.align(Alignment.BottomCenter)
+            )
         }
 
         TopAppBar(
@@ -275,6 +223,84 @@ fun MovieHeader(
         )
     }
 
+}
+
+@Composable
+fun PlayTrailer(
+    onPlayTrailer: () -> Unit,
+    movie: MovieDetail,
+    onBookmarkChanged: () -> Unit,
+    isBookmarked: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.padding(bottom = 20.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.play),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable {
+                        onPlayTrailer()
+                    }
+            )
+            Text(
+                text = " Trailer",
+                style = MaterialTheme.typography.body1,
+                color = Color.White
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+//                        .align(Alignment.BottomStart)
+                .padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.round_star_rate_24),
+                contentDescription = null, modifier = Modifier.size(16.dp)
+            )
+            Text(
+                modifier = Modifier.padding(start = 2.dp),
+                text = movie.vote_average.toString().take(3),
+                style = MaterialTheme.typography.h5,
+                color = Color.White
+            )
+            Text(
+                text = " | ${movie.vote_count}",
+                style = MaterialTheme.typography.caption,
+                color = IconColorOnDarkScreen
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                painter = painterResource(
+                    id = R.drawable.outline_share_24
+                ),
+                contentDescription = null,
+                tint = IconColorOnDarkScreen,
+                modifier = Modifier
+                    .padding(end = 10.dp)
+                    .size(20.dp)
+            )
+
+            Icon(
+                modifier = Modifier
+                    .size(20.dp)
+                    .clickable { onBookmarkChanged() },
+                painter = if (isBookmarked) painterResource(id = R.drawable.baseline_bookmark_24) else painterResource(
+                    id = R.drawable.outline_bookmark_border_24
+                ),
+                contentDescription = null,
+                tint = IconColorOnDarkScreen
+            )
+        }
+    }
 }
 
 @Composable
@@ -362,109 +388,66 @@ fun ExpandingText(text: String, modifier: Modifier = Modifier) {
     var isExpanded by remember { mutableStateOf(false) }
     val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
     var isClickable by remember { mutableStateOf(false) }
-    var finalText by remember { mutableStateOf(text) }
+    var finalText by remember {
+        mutableStateOf(text)
+    }
 
     val textLayoutResult = textLayoutResultState.value
+
     LaunchedEffect(textLayoutResult) {
         if (textLayoutResult == null) return@LaunchedEffect
-
         when {
             isExpanded -> {
                 finalText = "$text Show Less"
             }
-            !isExpanded && textLayoutResult.hasVisualOverflow -> {
+            textLayoutResult.hasVisualOverflow -> {
                 val lastCharIndex = textLayoutResult.getLineEnd(3 - 1)
                 val showMoreString = "... Show More"
                 val adjustedText = text
                     .substring(startIndex = 0, endIndex = lastCharIndex)
                     .dropLast(showMoreString.length)
                     .dropLastWhile { it == ' ' || it == '.' }
-
                 finalText = "$adjustedText$showMoreString"
-
                 isClickable = true
             }
         }
     }
-
-    Text(
-        text = finalText,
-        color = BodyColor,
-        style = MaterialTheme.typography.body1,
-        maxLines = if (isExpanded) Int.MAX_VALUE else 3,
-        onTextLayout = { textLayoutResultState.value = it },
-        modifier = modifier
-            .clickable(enabled = isClickable) { isExpanded = !isExpanded }
-            .animateContentSize(),
-    )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateContentSize()
+    ) {
+        Text(
+            text = finalText.dropLast(9),
+            color = BodyColor,
+            style = MaterialTheme.typography.body1,
+            maxLines = if (isExpanded) Int.MAX_VALUE else 3,
+            onTextLayout = { textLayoutResultState.value = it },
+        )
+        Text(
+            text = if (isExpanded) "Show Less" else "Show More",
+            color = ReadColor,
+            style = MaterialTheme.typography.body1,
+            modifier = modifier
+                .clickable(enabled = isClickable) { isExpanded = !isExpanded }
+                .align(Alignment.BottomEnd)
+                .animateContentSize(),
+        )
+    }
 }
 
 @Composable
-fun ExoPlayerView(viewModel: MoviesViewModel, posterPath: String) {
-//    val trailerState by viewModel.trailer.collectAsState()
-//    if (trailerState.data.results.isNotEmpty()) {
-//        val context = LocalContext.current
-//        val lifecycleOwner = LocalLifecycleOwner.current
-//        val youTubePlayerListener = remember {
-//            object : AbstractYouTubePlayerListener() {
-//                var youTubePlayer: YouTubePlayer? = null
-//                    private set
-//
-//                override fun onReady(youTubePlayer: YouTubePlayer) {
-//                    super.onReady(youTubePlayer)
-//                    this.youTubePlayer = youTubePlayer
-//                    if (trailerState.data.results.isNotEmpty()) {
-//                        youTubePlayer.loadVideo(
-//                            trailerState.data.results[trailerState.data.results.size - 1].key,
-//                            0f
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//
-//        val iFramePlayerOptions = IFramePlayerOptions.Builder()
-//            .controls(1)    //0 to disable seekbar
-//            .build()
-//
-//        val youTubePlayerView = remember {
-//            YouTubePlayerView(context).apply {
-//                enableAutomaticInitialization = false
-//                initialize(youTubePlayerListener, iFramePlayerOptions)
-//            }
-//        }
-//        AndroidView(
-//            modifier = Modifier.fillMaxWidth(),
-//            factory = {
-//                youTubePlayerView
-//            }
-//        )
-//        DisposableEffect(key1 = youTubePlayerView, key2 = trailerState, effect = {
-//            lifecycleOwner.lifecycle.addObserver(youTubePlayerView)
-//            if (trailerState.data.results.isNotEmpty()) {
-//                youTubePlayerListener.youTubePlayer?.loadVideo(
-//                    trailerState.data.results[trailerState.data.results.size - 1].key,
-//                    0f
-//                )
-//            }
-//            onDispose {
-//                lifecycleOwner.lifecycle.removeObserver(youTubePlayerView)
-//            }
-//        })
-//    } else {
+fun ExoPlayerView(posterPath: String) {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(IMAGE_URL + posterPath)
             .crossfade(true)
             .build(),
-        placeholder = painterResource(R.drawable.outline_share_24),
         contentDescription = "dec",
-//            circularRevealedEnabled = true,
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.FillBounds,
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.798f)
+            .aspectRatio(0.68f)
     )
-//    }
 }
 
