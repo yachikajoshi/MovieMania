@@ -9,7 +9,6 @@ val Teal200 = Color(0xFF03DAC5)
 val DarkPurple = Color(0XFF3c1053)
 val MediumPurple = Color(0XFF42275a)
 
-val MainColor = Color(0XFFF17708)
 val Background = Color(0XFF1a2230)
 val BottomAppBarColor = Color(0xff2c2c38)
 val ChipColor = Color(0XFF34353E)

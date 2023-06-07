@@ -2,7 +2,6 @@ package com.yachikajoshi.movielist.ui.presentation
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -67,7 +65,6 @@ fun MovieDetailScreen(
                 )
         ) {
             MovieHeader(
-                viewModel = viewModel,
                 movie = selectedMovie,
                 isBookmarked = isBookmarked,
                 onBookmarkChanged = {
@@ -116,61 +113,8 @@ fun MovieDetailScreen(
     }
 }
 
-@Preview
-@Composable
-fun PlaySection(
-    modifier: Modifier = Modifier,
-    movieName: String = "Hello"
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            FloatingActionButton(
-                onClick = { /*TODO*/ },
-                backgroundColor = MaterialTheme.colors.primary,
-                contentColor = MaterialTheme.colors.onPrimary,
-            ) {
-                Icon(
-                    modifier = Modifier.size(42.dp),
-                    painter = painterResource(id = R.drawable.baseline_play_arrow_24),
-                    contentDescription = null
-                )
-            }
-        }
-        Column(
-            modifier = modifier
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Available now",
-                color = MaterialTheme.colors.onSurface,
-                style = MaterialTheme.typography.body2
-            )
-            Text(
-                text = "Watch $movieName",
-                color = MaterialTheme.colors.onSurface,
-                style = MaterialTheme.typography.subtitle1
-            )
-        }
-    }
-
-
-}
-
 @Composable
 fun MovieHeader(
-    viewModel: MoviesViewModel,
     modifier: Modifier = Modifier,
     movie: MovieDetail,
     isBookmarked: Boolean,
@@ -183,7 +127,7 @@ fun MovieHeader(
             .fillMaxSize()
     ) {
         Box {
-            ExoPlayerView(posterPath = movie.poster_path)
+            Poster(posterPath = movie.poster_path)
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -258,7 +202,6 @@ fun PlayTrailer(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-//                        .align(Alignment.BottomStart)
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -306,8 +249,7 @@ fun PlayTrailer(
 @Composable
 fun MovieDescription(
     modifier: Modifier = Modifier,
-    movie: MovieDetail,
-//    castList: List<CastResponse.Cast>
+    movie: MovieDetail
 ) {
     val spannedTextGenre = buildAnnotatedString {
         withStyle(
@@ -384,66 +326,13 @@ fun MovieDescription(
 }
 
 @Composable
-fun ExpandingText(text: String, modifier: Modifier = Modifier) {
-    var isExpanded by remember { mutableStateOf(false) }
-    val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
-    var isClickable by remember { mutableStateOf(false) }
-    var finalText by remember {
-        mutableStateOf(text)
-    }
-
-    val textLayoutResult = textLayoutResultState.value
-
-    LaunchedEffect(textLayoutResult) {
-        if (textLayoutResult == null) return@LaunchedEffect
-        when {
-            isExpanded -> {
-                finalText = "$text Show Less"
-            }
-            textLayoutResult.hasVisualOverflow -> {
-                val lastCharIndex = textLayoutResult.getLineEnd(3 - 1)
-                val showMoreString = "... Show More"
-                val adjustedText = text
-                    .substring(startIndex = 0, endIndex = lastCharIndex)
-                    .dropLast(showMoreString.length)
-                    .dropLastWhile { it == ' ' || it == '.' }
-                finalText = "$adjustedText$showMoreString"
-                isClickable = true
-            }
-        }
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-    ) {
-        Text(
-            text = finalText.dropLast(9),
-            color = BodyColor,
-            style = MaterialTheme.typography.body1,
-            maxLines = if (isExpanded) Int.MAX_VALUE else 3,
-            onTextLayout = { textLayoutResultState.value = it },
-        )
-        Text(
-            text = if (isExpanded) "Show Less" else "Show More",
-            color = ReadColor,
-            style = MaterialTheme.typography.body1,
-            modifier = modifier
-                .clickable(enabled = isClickable) { isExpanded = !isExpanded }
-                .align(Alignment.BottomEnd)
-                .animateContentSize(),
-        )
-    }
-}
-
-@Composable
-fun ExoPlayerView(posterPath: String) {
+fun Poster(posterPath: String) {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(IMAGE_URL + posterPath)
             .crossfade(true)
             .build(),
-        contentDescription = "dec",
+        contentDescription = null,
         contentScale = ContentScale.FillBounds,
         modifier = Modifier
             .fillMaxWidth()
