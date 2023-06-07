@@ -2,8 +2,8 @@ package com.yachikajoshi.movielist.data.datasource
 
 import com.yachikajoshi.movielist.data.model.CastResponse
 import com.yachikajoshi.movielist.data.model.MovieDetail
-import com.yachikajoshi.movielist.data.model.MovieTrailer
 import com.yachikajoshi.movielist.data.model.MovieResponse
+import com.yachikajoshi.movielist.data.model.MovieTrailer
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

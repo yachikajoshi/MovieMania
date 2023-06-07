@@ -39,50 +39,34 @@ import dev.chrisbanes.snapper.SnapOffsets
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 import kotlin.math.absoluteValue
 
-@OptIn(ExperimentalSnapperApi::class)
+@OptIn(ExperimentalSnapperApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ScrollImage(movieState: MovieState) {
     val movie: List<MovieResponse.Movie> = movieState.data.take(4)
+    val pagerState = rememberPagerState()
     val listState = rememberLazyListState()
     var currentIndex: Int by remember {
         mutableStateOf(-1)
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally,modifier = Modifier
-        .pointerInput(Unit) {
-            detectDragGestures { change, dragAmount ->
-                change.consume()
-
-                val (x, y) = dragAmount
-                when {
-                    x > 0 -> {
-                        Log.d("adfadsf", "ScrollImage: Swipe Right")
-                    }
-                    x < 0 -> {
-                        Log.d("adfadsf", "ScrollImage: Swipe Left")
-                    }
-                }
-            }
-//                    when {
-//                        y > 0 -> { /* down */
-//                        }
-//                        y < 0 -> { /* up */
-//                        }
-//                    }
-//
-//                    offsetX += dragAmount.x
-//                    offsetY += dragAmount.y
-        }) {
-        LazyRow(
-            state = listState,
-            flingBehavior = rememberSnapperFlingBehavior(listState),
-
-        ) {
-            items(movie.size) {
-                currentIndex = it
-                LatestMovies1(movie, it)
-            }
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier) {
+        HorizontalPager(
+            pageCount = movie.size,
+            state = pagerState,
+//            flingBehavior = rememberSnapperFlingBehavior(pagerState)
+        ) { page ->
+            currentIndex = pagerState.currentPage
+            LatestMovies1(movie, page)
         }
+//        LazyRow(
+//            state = listState,
+//            flingBehavior = rememberSnapperFlingBehavior(listState),
+//        ) {
+//            items(movie.size) {
+//                currentIndex = it
+//                LatestMovies1(movie, it)
+//            }
+//        }
         if (currentIndex != -1) {
             Spacer(modifier = Modifier.padding(top = 20.dp))
             Text(

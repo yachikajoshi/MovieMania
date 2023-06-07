@@ -36,6 +36,7 @@ class AllMoviesViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(),
             initialValue = "",
         )
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val searchMovie = search.debounce(300.milliseconds).flatMapLatest { query ->
         Pager(
