@@ -117,13 +117,5 @@ class MainActivity : ComponentActivity() {
         //Hide the status bars
         WindowCompat.setDecorFitsSystemWindows(window, true)
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-//            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-//        } else {
-//            window.insetsController?.apply {
-//                hide(WindowInsets.Type.statusBars())
-//                systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-//            }
-//        }
     }
 }

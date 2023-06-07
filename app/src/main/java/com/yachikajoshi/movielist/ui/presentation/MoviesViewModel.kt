@@ -13,9 +13,12 @@ import com.yachikajoshi.movielist.data.model.MovieTrailer
 import com.yachikajoshi.movielist.domain.use_case.CastUseCase
 import com.yachikajoshi.movielist.domain.use_case.MovieListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,6 +71,7 @@ class MoviesViewModel @Inject constructor(
                 }
             }
         }
+
     }
 
     private fun getTrendingMovieList() {
@@ -86,6 +90,7 @@ class MoviesViewModel @Inject constructor(
             }
         }
     }
+
 
     private fun getUpcomingMovieList() {
         viewModelScope.launch {
