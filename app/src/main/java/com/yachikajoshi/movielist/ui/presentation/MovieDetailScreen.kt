@@ -39,6 +39,9 @@ fun MovieDetailScreen(
     var selectedMovie by remember { mutableStateOf(selected) }
     val bookmarks = remember { mutableStateListOf<MovieDetail>() }
     val scrollState = rememberScrollState()
+    var showSimilarMovieTitle by remember {
+        mutableStateOf(true)
+    }
 
     LaunchedEffect(key1 = viewModel.selectedMovie) {
         viewModel.selectedMovie.collect { movieDetailState ->
@@ -89,18 +92,24 @@ fun MovieDetailScreen(
             )
             MovieCast(castList = viewModel.castState.data)
             Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                color = Color(0XFFFFFFFF),
-                text = "Similar Movies",
-                style = MaterialTheme.typography.h1,
-                modifier = Modifier.padding(start = 10.dp)
-            )
+            if (showSimilarMovieTitle) {
+                Text(
+                    color = Color(0XFFFFFFFF),
+                    text = "Similar Movies",
+                    style = MaterialTheme.typography.h1,
+                    modifier = Modifier.padding(start = 10.dp)
+                )
+            }
+
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
+                if (viewModel.suggestedMovieState.value.data.isEmpty()) {
+                    showSimilarMovieTitle = false
+                }
                 items(viewModel.suggestedMovieState.value.data.filter { data -> data.poster_path != null }) { movie ->
                     MovieItems(movie = movie,
                         Modifier.clickable {
